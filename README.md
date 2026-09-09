@@ -37,6 +37,6 @@
 2. Или запусти внутри Telegram через Mini App кнопку бота.
 3. Данные хранятся только у тебя в браузере / в твоём Telegram-профиле.
 
-## Автор
 Создано при помощи [Мультитула](https://multitool.works)
+## Автор
 [ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
