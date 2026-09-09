@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Моя копилка — трекер накоплений</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#faf6ef; --ink:#2b2118; --muted:#8a7a66; --faint:#b8a98f;
+  --accent:#c07f1d; --accent-strong:#9a6414; --accent-soft:#f6ecd9;
+  --gold:#e0a63c; --green:#2e7d4f; --green-soft:#e3f0e8;
+  --line:#e9ddc7; --down:#b3382c; --white:#fffdf8;
+  --shadow:0 10px 30px rgba(43,33,24,.08);
+  --radius:14px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.tg{background:var(--tg-bg);color:var(--tg-tx)}
+
+#app{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+main{flex:1;max-width:920px;margin:0 auto;padding:1.25rem 1rem calc(2rem + var(--safe-bot));width:100%}
+
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer;border:none;border-radius:10px;transition:transform .08s ease,box-shadow .15s ease,background .15s ease;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+button:active{transform:scale(.97)}
+.btn{background:var(--accent);color:#fff;padding:.6rem 1.1rem;font-weight:600}
+.btn:hover{background:var(--accent-strong)}
+.btn.ghost{background:var(--accent-soft);color:var(--accent-strong)}
+.btn.ghost:hover{background:#efe0c4}
+.btn.gray{background:#eee4d2;color:var(--ink)}
+.btn.gray:hover{background:#e4d7bf}
+.btn.danger{background:var(--down);color:#fff}
+.btn.danger:hover{background:#96291f}
+.btn.small{padding:.35rem .7rem;font-size:.85rem}
+body.tg .btn{background:var(--tg-btn);color:var(--tg-btn-tx)}
+body.tg .btn.ghost,body.tg .btn.gray{background:var(--tg-bg2);color:var(--tg-tx)}
+body.tg .btn.danger{background:#b3382c;color:#fff}
+
+.screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0 1rem}
+.screen-head h1{font-size:1.45rem;margin:0;word-break:break-word}
+
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem}
+body.tg .card{background:var(--tg-bg2);border-color:transparent;box-shadow:none}
+
+.welcome{text-align:center;padding:2rem 1.25rem}
+.welcome .pig{width:76px;height:76px;margin:0 auto .8rem}
+.welcome h1{font-size:1.6rem;margin:.2rem 0 .4rem}
+.welcome p{color:var(--muted);max-width:520px;margin:.3rem auto;font-size:.92rem}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1.4rem auto 0;max-width:440px}
+.form-grid .full{grid-column:1/-1}
+.field{text-align:left}
+.field label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.25rem;font-weight:600}
+.field input{width:100%;padding:.6rem .75rem;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;background:var(--bg);color:var(--ink);-webkit-appearance:none}
+.field input:focus{outline:none;border-color:var(--accent);background:#fff}
+.form-grid .btn{grid-column:1/-1;margin-top:.3rem;padding:.8rem}
+.form-grid .btn-line{grid-column:1/-1;margin-top:.1rem}
+.form-grid .btn-line button{width:100%}
+.preview{margin:1.4rem auto 0;max-width:520px}
+.preview h2{font-size:.9rem;color:var(--muted);font-weight:600;margin:0 0 .5rem;text-align:center}
+
+.toolbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:1rem 0 .75rem}
+.toolbar .spacer{flex:1}
+
+.grid{display:grid;gap:6px}
+.cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease}
+.grid.clickable .cell{cursor:pointer}
+.grid.clickable .cell:hover{border-color:var(--accent)}
+.cell .val{line-height:1.1;text-align:center;padding:0 .15rem}
+.cell.empty{border-style:dashed;color:var(--faint);font-weight:500}
+.cell.set{background:var(--accent-soft);border-color:#e0c98f}
+.cell.done{background:var(--green-soft);border-color:var(--green)}
+.cell.done .val{color:var(--green);text-decoration:line-through;text-decoration-thickness:2.5px;text-decoration-color:var(--green)}
+.cell.pop{animation:pop .25s ease}
+@keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+.bank-head{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem}
+.donut-wrap{flex:0 0 auto;position:relative;width:130px;height:130px}
+.donut-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut-bg{fill:none;stroke:#f0e5cd;stroke-width:13}
+.donut-fg{fill:none;stroke:var(--green);stroke-width:13;stroke-linecap:round;transition:stroke-dasharray .5s ease}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-center b{font-size:1.5rem;line-height:1;color:var(--green)}
+.donut-center span{font-size:.7rem;color:var(--muted)}
+.stats{flex:1;min-width:200px}
+.stats .name{font-size:.8rem;color:var(--muted);font-weight:600;margin-bottom:.2rem}
+.stats .big{font-size:1.7rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.stats .big small{font-size:1rem;color:var(--muted);font-weight:600}
+.stats .of{color:var(--muted);font-size:.9rem;margin-top:.1rem}
+.progress{height:10px;background:#f0e5cd;border-radius:99px;overflow:hidden;margin:.8rem 0 .3rem}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:99px;width:0;transition:width .5s ease}
+.stats .hint{font-size:.8rem;color:var(--muted)}
+
+.legend{display:flex;gap:1rem;flex-wrap:wrap;color:var(--muted);font-size:.8rem;margin:0 0 .75rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.swatch{width:13px;height:13px;border-radius:4px;border:1px solid var(--line);display:inline-block}
+.swatch.s-done{background:var(--green-soft);border-color:var(--green)}
+
+.bank-list{display:flex;flex-direction:column;gap:.5rem;max-height:50vh;overflow-y:auto;margin:.7rem 0;-webkit-overflow-scrolling:touch}
+.bank-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .12s ease,background .12s ease}
+body.tg .bank-item{background:var(--tg-bg);border-color:transparent}
+.bank-item:hover{border-color:var(--accent);background:var(--accent-soft)}
+.bank-item .bi-name{font-weight:700;font-size:.9rem}
+.bank-item .bi-meta{font-size:.78rem;color:var(--muted)}
+.bank-item .bi-del{background:none;color:var(--faint);padding:.05rem .3rem;font-size:1.1rem;line-height:1;border-radius:6px}
+.bank-item .bi-del:hover{color:var(--down);background:#fee2e0}
+.empty-list{text-align:center;color:var(--muted);padding:1.5rem 0;font-size:.9rem}
+
+.footer{color:var(--faint);font-size:.75rem;text-align:center;margin-top:2rem;padding-bottom:var(--safe-bot)}
+
+.overlay{position:fixed;inset:0;background:rgba(43,33,24,.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50;animation:fade .15s ease}
+body.tg .overlay{background:rgba(0,0,0,.4)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border-radius:var(--radius);box-shadow:0 20px 60px rgba(43,33,24,.28);padding:1.4rem;width:100%;max-width:400px;animation:rise .2s ease;max-height:90vh;overflow-y:auto}
+body.tg .modal{background:var(--tg-bg2);max-width:95vw}
+@keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.modal h3{margin:0 0 .35rem;font-size:1.05rem}
+.modal p.muted{color:var(--muted);font-size:.85rem;margin:0 0 1rem}
+.modal .field{margin-bottom:.8rem}
+.modal .row{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+.modal .row .btn{flex:1}
+.modal .err{color:var(--down);font-size:.82rem;margin-top:-.3rem;margin-bottom:.5rem}
+
+.noscript{color:var(--down);text-align:center;padding:2rem}
+
+@media(max-width:640px){
+  .welcome{padding:1.5rem 1rem}
+  .welcome .pig{width:60px;height:60px}
+  .welcome h1{font-size:1.35rem}
+  .form-grid{gap:.6rem;max-width:100%}
+  .cell{min-height:44px;font-size:.8rem;border-radius:6px}
+  .grid{gap:4px}
+  .bank-head{flex-direction:column;text-align:center}
+  .donut-wrap{width:110px;height:110px}
+  .donut-center b{font-size:1.3rem}
+  .stats .big{font-size:1.4rem}
+  .stats .of{font-size:.82rem}
+  .modal{padding:1.1rem;border-radius:12px}
+  .modal h3{font-size:1rem}
+  .screen-head h1{font-size:1.2rem}
+  .card{padding:1rem}
+  .toolbar{gap:.4rem}
+  .bank-item{padding:.5rem .7rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+  <noscript><p class="noscript">Для работы приложения включите JavaScript.</p></noscript>
+
+  <section id="screen-create">
+    <div class="card welcome">
+      <svg class="pig" viewBox="0 0 64 64" aria-hidden="true">
+        <ellipse cx="32" cy="38" rx="24" ry="20" fill="#f0c06b" stroke="#9a6414" stroke-width="2.5"/>
+        <circle cx="14" cy="26" r="4.5" fill="#f0c06b" stroke="#9a6414" stroke-width="2"/>
+        <circle cx="50" cy="26" r="4.5" fill="#f0c06b" stroke="#9a6414" stroke-width="2"/>
+        <path d="M12 24 a4 4 0 0 1 6-4" fill="#e79d8f" stroke="#9a6414" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="27" cy="37" r="2.1" fill="#2b2118"/>
+        <circle cx="39" cy="37" r="2.1" fill="#2b2118"/>
+        <ellipse cx="33" cy="44" rx="3.4" ry="2" fill="#b3382c"/>
+        <rect x="42" y="14" width="6" height="10" rx="3" fill="#c07f1d" stroke="#9a6414" stroke-width="1.6"/>
+        <path d="M44 16 v6 l-3-1.5 3-1.5z" fill="#9a6414" opacity=".55"/>
+        <ellipse cx="20" cy="48" rx="4" ry="2.4" fill="#f0c06b" stroke="#9a6414" stroke-width="1.6"/>
+        <ellipse cx="44" cy="48" rx="4" ry="2.4" fill="#f0c06b" stroke="#9a6414" stroke-width="1.6"/>
+      </svg>
+      <h1>Моя копилка</h1>
+      <p>Цифровой трекер для твоей копилки: создай таблицу как на копилке, отметь ячейки — и система посчитает прогресс.</p>
+      <div class="form-grid">
+        <div class="field full">
+          <label for="bank-name">Название</label>
+          <input id="bank-name" type="text" value="Моя копилка" maxlength="30">
+        </div>
+        <div class="field">
+          <label for="bank-rows">Ячеек по вертикали</label>
+          <input id="bank-rows" type="number" min="1" max="20" value="5">
+        </div>
+        <div class="field">
+          <label for="bank-cols">Ячеек по горизонтали</label>
+          <input id="bank-cols" type="number" min="1" max="12" value="6">
+        </div>
+        <button class="btn" id="btn-create">Создать копилку</button>
+        <div class="btn-line" id="my-banks-wrap" style="display:none">
+          <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
+        </div>
+      </div>
+      <div class="preview">
+        <h2>Предпросмотр</h2>
+        <div class="grid" id="preview-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-fill" class="hidden">
+    <div class="screen-head">
+      <h1 id="fill-title">Заполните ячейки</h1>
+      <button class="btn ghost" id="btn-back-create">← Назад</button>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="btn" id="btn-wizard">Заполнить по порядку</button>
+        <button class="btn gray" id="btn-clear">Очистить</button>
+        <span class="spacer"></span>
+        <button class="btn" id="btn-save">Сохранить копилку</button>
+      </div>
+      <p class="legend">
+        <span><i class="swatch"></i> пустая — нажми и впиши сумму</span>
+        <span><i class="swatch s-done"></i> заполненная</span>
+      </p>
+      <div class="grid clickable" id="grid-fill"></div>
+    </div>
+  </section>
+
+  <section id="screen-track" class="hidden">
+    <div class="screen-head">
+      <h1 id="track-title">Моя копилка</h1>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn ghost small" id="btn-edit">Редактировать</button>
+        <button class="btn small" id="btn-menu">Меню</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="bank-head">
+        <div class="donut-wrap">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Прогресс накоплений">
+            <circle class="donut-bg" cx="50" cy="50" r="42"></circle>
+            <circle class="donut-fg" id="donut-fg" cx="50" cy="50" r="42"></circle>
+          </svg>
+          <div class="donut-center">
+            <b id="pct-label">0%</b>
+            <span>накоплено</span>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="name" id="stat-name">Моя копилка</div>
+          <div class="big" id="stat-filled">0&nbsp;₽</div>
+          <div class="of">из <span id="stat-total">0&nbsp;₽</span> · осталось <span id="stat-left">0&nbsp;₽</span></div>
+          <div class="progress"><i id="progress-bar"></i></div>
+          <div class="hint" id="stat-hint">Нажми на ячейку с суммой, которую положил в копилку, — она зачеркнётся.</div>
+        </div>
+      </div>
+      <p class="legend">
+        <span><i class="swatch s-done"></i> зачёркнуто = деньги положены</span>
+        <span><i class="swatch"></i> ещё не положено</span>
+      </p>
+      <div class="grid clickable" id="grid-track"></div>
+    </div>
+  </section>
+
+  <p class="footer">Данные хранятся локально. Telegram Mini App</p>
+</main>
+</div>
+
+<div class="overlay hidden" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+(function(){
+  var KEY = 'kopilka-banks-v3';
+  var C = 2 * Math.PI * 42;
+  var TG = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+  var store = null;
+  var currentBank = null;
+
+  if(TG){
+    document.body.classList.add('tg');
+    var root = document.documentElement.style;
+    var tp = TG.themeParams || {};
+    root.setProperty('--tg-bg', tp.bg_color || '#faf6ef');
+    root.setProperty('--tg-tx', tp.text_color || '#2b2118');
+    root.setProperty('--tg-btn', tp.button_color || '#c07f1d');
+    root.setProperty('--tg-btn-tx', tp.button_text_color || '#fffdf8');
+    root.setProperty('--tg-bg2', tp.section_bg_color || '#fffdf8');
+    TG.expand();
+    TG.ready();
+  }
+
+  function localLoad(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(raw){
+        var s = JSON.parse(raw);
+        if(s && s.banks && Array.isArray(s.banks)) return s;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function localSave(json){
+    try{ localStorage.setItem(KEY, json); }catch(e){}
+  }
+
+  function defaultStore(){ return { banks: [], currentName: null }; }
+
+  function startApp(){
+    store = store || localLoad() || defaultStore();
+    updateMyBanksBtn();
+    if(store.currentName){
+      var cur = getBank(store.currentName);
+      if(cur){
+        currentBank = cur;
+        renderTrack(cur);
+        show('screen-track');
+        return;
+      }
+    }
+    renderPreview();
+    show('screen-create');
+  }
+
+  function load(){
+    if(TG && TG.CloudStorage){
+      TG.CloudStorage.getItem(KEY, function(err, val){
+        if(!err && val){
+          try{
+            var s = JSON.parse(val);
+            if(s && s.banks && Array.isArray(s.banks)){
+              store = s;
+              startApp();
+              return;
+            }
+          }catch(e){}
+        }
+        store = localLoad() || defaultStore();
+        startApp();
+      });
+      setTimeout(function(){
+        if(!store) startApp();
+      }, 600);
+    } else {
+      store = localLoad() || defaultStore();
+      startApp();
+    }
+  }
+
+  function saveStore(){
+    if(!store) return;
+    var json = null;
+    try{ json = JSON.stringify(store); }catch(e){ return; }
+    localSave(json);
+    if(TG && TG.CloudStorage){
+      try{ TG.CloudStorage.setItem(KEY, json); }catch(e){}
+    }
+  }
+
+  function getBank(name){
+    if(!store) return null;
+    for(var i=0;i<store.banks.length;i++){
+      if(store.banks[i].name === name) return store.banks[i];
+    }
+    return null;
+  }
+
+  function saveBank(bank){
+    if(!store) return;
+    for(var i=0;i<store.banks.length;i++){
+      if(store.banks[i].name === bank.name){
+        store.banks[i] = bank;
+        saveStore();
+        return;
+      }
+    }
+    store.banks.push(bank);
+    saveStore();
+  }
+
+  function deleteBank(name){
+    if(!store) return;
+    var idx = -1;
+    for(var i=0;i<store.banks.length;i++){
+      if(store.banks[i].name === name){ idx = i; break; }
+    }
+    if(idx !== -1){
+      store.banks.splice(idx, 1);
+      if(store.currentName === name) store.currentName = null;
+      saveStore();
+    }
+  }
+
+  function normalizeName(s){
+    return s.toLowerCase().replace(/\s+/g, '');
+  }
+
+  function isNameTaken(name){
+    if(!store) return false;
+    var n = normalizeName(name);
+    for(var i=0;i<store.banks.length;i++){
+      if(normalizeName(store.banks[i].name) === n) return true;
+    }
+    return false;
+  }
+
+  function fmt(n){ return Math.round(n).toLocaleString('ru-RU') + '\u00A0\u20bd'; }
+
+  function bankTotal(bank){
+    var s = 0;
+    for(var i=0;i<bank.cells.length;i++) s += (bank.cells[i].v || 0);
+    return s;
+  }
+
+  function bankFilled(bank){
+    var s = 0;
+    for(var i=0;i<bank.cells.length;i++) s += (bank.cells[i].d && bank.cells[i].v ? bank.cells[i].v : 0);
+    return s;
+  }
+
+  function bankDoneCount(bank){
+    var n = 0;
+    for(var i=0;i<bank.cells.length;i++) if(bank.cells[i].d) n++;
+    return n;
+  }
+
+  function bankPct(bank){
+    var t = bankTotal(bank);
+    return t ? bankFilled(bank)/t*100 : 0;
+  }
+
+  function $(id){ return document.getElementById(id); }
+
+  function show(id){
+    ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
+    $(id).classList.remove('hidden');
+    if(TG && TG.MainButton) TG.MainButton.hide();
+  }
+
+  function renderPreview(){
+    var rows = clampInt($('bank-rows').value, 1, 20, 5);
+    var cols = clampInt($('bank-cols').value, 1, 12, 6);
+    var g = $('preview-grid');
+    g.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+    g.innerHTML = '';
+    for(var i=0;i<rows*cols;i++){
+      var d = document.createElement('div');
+      d.className = 'cell empty';
+      d.innerHTML = '<span class="val">+</span>';
+      g.appendChild(d);
+    }
+  }
+
+  function clampInt(v, min, max, dflt){
+    var n = parseInt(v,10);
+    if(isNaN(n)) return dflt;
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function createBank(){
+    var name = ($('bank-name').value || '').trim().slice(0,30);
+    if(!name){
+      showError('Поле «Название» не заполнено. Придумайте название для копилки.');
+      return;
+    }
+    if(isNameTaken(name)){
+      showError('Копилка с таким названием уже существует. Придумайте другое название.');
+      return;
+    }
+    var rows = clampInt($('bank-rows').value, 1, 20, 5);
+    var cols = clampInt($('bank-cols').value, 1, 12, 6);
+    var cells = [];
+    for(var i=0;i<rows*cols;i++) cells.push({v:null, d:false});
+    var bank = { name: name, rows: rows, cols: cols, cells: cells };
+    saveBank(bank);
+    store.currentName = name;
+    saveStore();
+    currentBank = bank;
+    renderFill(bank);
+    show('screen-fill');
+  }
+
+  function showError(msg){
+    openModal(
+      '<h3>Ошибка</h3>' +
+      '<p class="muted">' + esc(msg) + '</p>' +
+      '<div class="row"><button class="btn" data-act="ok">Понятно</button></div>'
+    );
+    $('modal').querySelector('[data-act=ok]').addEventListener('click', closeModal);
+  }
+
+  function renderGrid(containerId, bank, editable){
+    var g = $(containerId);
+    g.style.gridTemplateColumns = 'repeat(' + bank.cols + ', 1fr)';
+    g.innerHTML = '';
+    for(var i=0;i<bank.cells.length;i++){
+      var c = bank.cells[i];
+      var d = document.createElement('div');
+      d.dataset.i = i;
+      if(c.v === null || c.v === undefined){
+        d.className = 'cell empty';
+        d.innerHTML = '<span class="val">' + (editable ? '+' : '\u2014') + '</span>';
+      } else {
+        d.className = 'cell set' + (c.d ? ' done' : '');
+        d.innerHTML = '<span class="val">' + fmt(c.v).replace('\u00A0\u20bd','') + '</span>';
+        d.title = fmt(c.v);
+      }
+      g.appendChild(d);
+    }
+  }
+
+  function renderFill(bank){
+    $('fill-title').textContent = bank.name + ' — заполните ячейки';
+    renderGrid('grid-fill', bank, true);
+  }
+
+  function renderTrack(bank){
+    $('track-title').textContent = bank.name;
+    $('stat-name').textContent = bank.name;
+    var f = bankFilled(bank), t = bankTotal(bank), p = bankPct(bank);
+    $('stat-filled').textContent = fmt(f);
+    $('stat-total').textContent = fmt(t);
+    $('stat-left').textContent = fmt(t - f);
+    $('pct-label').textContent = p.toLocaleString('ru-RU',{maximumFractionDigits:1}) + '%';
+    $('donut-fg').style.strokeDasharray = (p/100*C) + ' ' + C;
+    $('progress-bar').style.width = p + '%';
+    var done = bankDoneCount(bank), all = bank.cells.length;
+    $('stat-hint').textContent = done === all
+      ? 'Поздравляем! Все ячейки зачёркнуты — копилка полная!'
+      : 'Зачёркнуто ' + done + ' из ' + all + ' ячеек. Нажми на ячейку с суммой, которую положил в копилку.';
+    renderGrid('grid-track', bank, false);
+  }
+
+  function updateMyBanksBtn(){
+    var wrap = $('my-banks-wrap');
+    if(!wrap) return;
+    if(store && store.banks.length > 0) wrap.style.display = 'block';
+    else wrap.style.display = 'none';
+  }
+
+  function openModal(html){
+    $('modal').innerHTML = html;
+    $('overlay').classList.remove('hidden');
+    var first = $('modal').querySelector('input,button');
+    if(first && first.focus) setTimeout(function(){ first.focus(); }, 30);
+  }
+
+  function closeModal(){
+    $('overlay').classList.add('hidden');
+  }
+
+  function confirmModal(message, onYes){
+    openModal(
+      '<h3>Подтверждение</h3>' +
+      '<p class="muted">' + esc(message) + '</p>' +
+      '<div class="row">' +
+        '<button class="btn gray" data-act="no">Отмена</button>' +
+        '<button class="btn" data-act="yes">Да</button>' +
+      '</div>'
+    );
+    $('modal').querySelector('[data-act=yes]').addEventListener('click', function(){
+      closeModal();
+      onYes();
+    });
+    $('modal').querySelector('[data-act=no]').addEventListener('click', closeModal);
+  }
+
+  $('overlay').addEventListener('click', function(e){
+    if(e.target === $('overlay')) closeModal();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !$('overlay').classList.contains('hidden')) closeModal();
+  });
+
+  function cellValueModal(i){
+    var bank = currentBank;
+    if(!bank) return;
+    var c = bank.cells[i];
+    var cur = (c.v !== null && c.v !== undefined) ? c.v : '';
+    openModal(
+      '<h3>Сумма ячейки</h3>' +
+      '<p class="muted">Ячейка ' + (i+1) + ' из ' + bank.cells.length + '</p>' +
+      '<div class="field"><input id="cell-input" type="number" min="0" step="1" placeholder="Например, 100" value="' + cur + '"></div>' +
+      '<div class="row">' +
+        '<button class="btn gray" data-act="clear">Удалить</button>' +
+        '<button class="btn" data-act="ok">Готово</button>' +
+      '</div>'
+    );
+    var inp = $('cell-input');
+    inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') applyCell(); });
+    function applyCell(){
+      var raw = inp.value.trim();
+      var v = raw === '' ? null : parseFloat(raw.replace(/\s/g,''));
+      if(v !== null && (isNaN(v) || v < 0)){ inp.focus(); return; }
+      bank.cells[i].v = v;
+      if(v === null) bank.cells[i].d = false;
+      saveBank(bank);
+      renderFill(bank);
+      closeModal();
+    }
+    $('modal').querySelector('[data-act=ok]').addEventListener('click', applyCell);
+    $('modal').querySelector('[data-act=clear]').addEventListener('click', function(){
+      bank.cells[i].v = null; bank.cells[i].d = false;
+      saveBank(bank);
+      renderFill(bank);
+      closeModal();
+    });
+  }
+
+  function wizard(){
+    var bank = currentBank;
+    if(!bank) return;
+    var idx = 0;
+    function step(){
+      if(idx >= bank.cells.length){ closeModal(); return; }
+      var c = bank.cells[idx];
+      var cur = (c.v !== null && c.v !== undefined) ? c.v : '';
+      openModal(
+        '<h3>Заполнение по порядку</h3>' +
+        '<p class="muted">Ячейка ' + (idx+1) + ' из ' + bank.cells.length + ' — впиши сумму, как на твоей копилке. Пропусти, если ячейки нет.</p>' +
+        '<div class="field"><input id="wiz-input" type="number" min="0" step="1" placeholder="Сумма" value="' + cur + '"></div>' +
+        '<div class="row">' +
+          '<button class="btn gray" data-act="skip">Пропустить</button>' +
+          '<button class="btn" data-act="next">Далее</button>' +
+        '</div>'
+      );
+      var inp = $('wiz-input');
+      function next(storeVal){
+        var raw = inp.value.trim();
+        var v = raw === '' ? null : parseFloat(raw.replace(/\s/g,''));
+        if(storeVal){
+          if(v !== null && (isNaN(v) || v < 0)){ inp.focus(); return; }
+          bank.cells[idx].v = v;
+          if(v === null) bank.cells[idx].d = false;
+        }
+        saveBank(bank);
+        renderFill(bank);
+        idx++;
+        step();
+      }
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') next(true); });
+      $('modal').querySelector('[data-act=next]').addEventListener('click', function(){ next(true); });
+      $('modal').querySelector('[data-act=skip]').addEventListener('click', function(){ next(false); });
+    }
+    step();
+  }
+
+  function showMyBanks(){
+    var html = '<h3>Мои копилки</h3>';
+    if(store.banks.length === 0){
+      html += '<p class="muted">У вас пока нет сохранённых копилок.</p>';
+      html += '<div class="row"><button class="btn" data-act="ok">Закрыть</button></div>';
+    } else {
+      html += '<div class="bank-list">';
+      for(var i=0;i<store.banks.length;i++){
+        var b = store.banks[i];
+        var t = bankTotal(b);
+        var f = bankFilled(b);
+        var p = bankPct(b).toLocaleString('ru-RU',{maximumFractionDigits:1});
+        html +=
+          '<div class="bank-item" data-name="' + esc(b.name) + '">' +
+            '<div><div class="bi-name">' + esc(b.name) + '</div>' +
+            '<div class="bi-meta">' + b.cells.length + ' ячеек · ' + fmt(f) + ' из ' + fmt(t) + ' · ' + p + '%</div></div>' +
+            '<button class="bi-del" data-name="' + esc(b.name) + '" title="Удалить">&times;</button>' +
+          '</div>';
+      }
+      html += '</div>';
+      html += '<div class="row"><button class="btn ghost" data-act="close">Закрыть</button></div>';
+    }
+    openModal(html);
+
+    $('modal').querySelector('[data-act="close"], [data-act="ok"]').addEventListener('click', closeModal);
+
+    $('modal').addEventListener('click', function(e){
+      var item = e.target.closest('.bank-item');
+      if(!item) return;
+      var del = e.target.closest('.bi-del');
+      if(del){
+        var name = del.getAttribute('data-name');
+        confirmModal('Удалить копилку "' + name + '"?', function(){
+          deleteBank(name);
+          updateMyBanksBtn();
+          showMyBanks();
+        });
+      } else {
+        var name = item.getAttribute('data-name');
+        var bank = getBank(name);
+        if(bank){
+          store.currentName = name;
+          saveStore();
+          currentBank = bank;
+          renderTrack(bank);
+          closeModal();
+          show('screen-track');
+        }
+      }
+    });
+  }
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('click', function(e){
+    var cell = e.target.closest('.cell');
+    if(!cell) return;
+    var i = parseInt(cell.dataset.i, 10);
+    if(isNaN(i)) return;
+    if(!$('screen-fill').classList.contains('hidden')){
+      cellValueModal(i);
+    } else if(!$('screen-track').classList.contains('hidden')){
+      var bank = currentBank;
+      if(!bank) return;
+      var c = bank.cells[i];
+      if(c.v === null || c.v === undefined) return;
+      c.d = !c.d;
+      saveBank(bank);
+      renderTrack(bank);
+      cell.classList.add('pop');
+      setTimeout(function(){ cell.classList.remove('pop'); }, 260);
+      if(TG && TG.HapticFeedback) TG.HapticFeedback.impactOccurred('light');
+    }
+  });
+
+  $('btn-create').addEventListener('click', createBank);
+
+  $('bank-name').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') createBank();
+  });
+
+  ['bank-rows','bank-cols'].forEach(function(id){
+    $(id).addEventListener('input', renderPreview);
+  });
+
+  $('btn-back-create').addEventListener('click', function(){
+    show('screen-create');
+    updateMyBanksBtn();
+  });
+
+  $('btn-wizard').addEventListener('click', wizard);
+
+  $('btn-clear').addEventListener('click', function(){
+    var bank = currentBank;
+    if(!bank) return;
+    confirmModal('Очистить все суммы из ячеек?', function(){
+      for(var i=0;i<bank.cells.length;i++){ bank.cells[i].v = null; bank.cells[i].d = false; }
+      saveBank(bank);
+      renderFill(bank);
+    });
+  });
+
+  $('btn-save').addEventListener('click', function(){
+    var bank = currentBank;
+    if(!bank) return;
+    function doSave(){
+      saveBank(bank);
+      store.currentName = bank.name;
+      saveStore();
+      renderTrack(bank);
+      show('screen-track');
+    }
+    if(!bank.cells.some(function(c){ return c.v !== null && c.v !== undefined; })){
+      confirmModal('Ни одна ячейка не заполнена. Всё равно сохранить?', doSave);
+      return;
+    }
+    doSave();
+  });
+
+  $('btn-edit').addEventListener('click', function(){
+    var bank = currentBank || getBank(store.currentName);
+    if(!bank) return;
+    currentBank = bank;
+    renderFill(bank);
+    show('screen-fill');
+  });
+
+  $('btn-menu').addEventListener('click', function(){
+    show('screen-create');
+    updateMyBanksBtn();
+  });
+
+  $('btn-my-banks').addEventListener('click', showMyBanks);
+
+  load();
+})();
+</script>
+</body>
+</html>
