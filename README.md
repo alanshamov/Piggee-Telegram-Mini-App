@@ -80,3 +80,8 @@
 ## Автор
 
 [ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
+
+---
+<sub>
+  <font color="#6b7280">При создании использовался Мультитул</font>
+</sub>
