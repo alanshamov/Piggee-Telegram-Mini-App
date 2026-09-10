@@ -48,6 +48,8 @@ body.dark .btn.ghost:hover{background:#4a3f30}
 body.dark .btn.gray{background:#35302a;color:var(--ink)}
 body.dark .btn.gray:hover{background:#3f3931}
 body.dark .btn.danger{background:var(--down);color:#fff}
+body.dark .btn.success{background:var(--green);color:#fff}
+body.dark .btn.success:hover{background:#256c41}
 
 /* ---------- Тёмная тема ---------- */
 body.dark{
@@ -225,7 +227,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
         </div>
         <div class="field">
           <label for="bank-cols">Ячеек по горизонтали</label>
-          <input id="bank-cols" type="number" min="1" max="12" value="6">
+          <input id="bank-cols" type="number" min="1" max="10" value="6">
         </div>
         <button class="btn" id="btn-create">Создать копилку</button>
         <button class="btn ghost" id="btn-template">Шаблоны</button>
@@ -519,7 +521,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   function renderPreview(){
     var rows = clampInt($('bank-rows').value, 1, 20, 5);
-    var cols = clampInt($('bank-cols').value, 1, 12, 6);
+    var cols = clampInt($('bank-cols').value, 1, 10, 6);
     var g = $('preview-grid');
     g.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
     g.innerHTML = '';
@@ -548,7 +550,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       return;
     }
     var rows = clampInt($('bank-rows').value, 1, 20, 5);
-    var cols = clampInt($('bank-cols').value, 1, 12, 6);
+    var cols = clampInt($('bank-cols').value, 1, 10, 6);
     var cells = [];
     for(var i=0;i<rows*cols;i++) cells.push({v:null, d:false});
     var bank = { name: name, rows: rows, cols: cols, cells: cells };
@@ -562,7 +564,10 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   // Название сетки под количество ячеек: подбираем rows/cols, чтобы rows*cols = cells
   function gridSize(cells){
-    var rows = 10, cols = Math.ceil(cells / 10);
+    var cols = 10;
+    var rows = Math.ceil(cells / cols);
+    if(rows < 1) rows = 1;
+    if(rows > 20) rows = 20;
     return { rows: rows, cols: cols };
   }
 
