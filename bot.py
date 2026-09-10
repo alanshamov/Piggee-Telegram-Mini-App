@@ -14,6 +14,8 @@ APP_URL = os.getenv("APP_URL", "https://alanshamov.github.io/Piggee-Telegram-Min
 WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "")
 # Баннер для приветствия — лежит в репозитории, раздаётся через GitHub Pages
 BANNER_URL = os.getenv("BANNER_URL", "https://alanshamov.github.io/Piggee-Telegram-Mini-App/banner-piggee-github.jpg")
+# Ссылка на репозиторий проекта
+GITHUB_URL = os.getenv("GITHUB_URL", "https://github.com/alanshamov/Piggee-Telegram-Mini-App")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -27,6 +29,8 @@ HELLO_TEXT = (
     "\u2022 создавать копилку — как таблицу, прям как на твоей;\n"
     "\u2022 зачёркивать ячейку, когда кладёшь деньги;\n"
     "\u2022 сам считать накопленное, цель и прогресс в процентах %.\n\n"
+    "\u2699\ufe0f Подробнее о приложении и его обновлениях можно посмотреть на странице "
+    "<a href=\"" + GITHUB_URL + "\">GitHub</a>\n\n"
     "\U0001F3DD Нажми кнопку ниже и начинай копить!"
 )
 
@@ -45,9 +49,9 @@ async def cmd_start(message: Message):
     )
     caption = HELLO_TEXT
     try:
-        await message.answer_photo(photo=BANNER_URL, caption=caption, reply_markup=keyboard)
+        await message.answer_photo(photo=BANNER_URL, caption=caption, parse_mode="HTML", reply_markup=keyboard)
     except Exception:
-        await message.answer(caption, reply_markup=keyboard)
+        await message.answer(caption, parse_mode="HTML", reply_markup=keyboard)
 
 
 async def handle_update(request: web.Request):
