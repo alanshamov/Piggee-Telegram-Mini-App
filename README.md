@@ -51,7 +51,7 @@
 **Приложение** (`kopilka.html`) — статический сайт, хостится на **GitHub Pages**.
 Данные хранятся локально у пользователя (localStorage) и, при запуске внутри Telegram, дублируются в **CloudStorage Telegram** — поэтому копилки привязаны к аккаунту и не пропадают.
 
-**Бот** (`bot.py`) — отвечает на `/start`. Запущен на **Render** через webhook:
+**Бот** (`bot.py`) — отвечает на `/start`. Запущен на [**Render**](https://render.com/) через webhook:
 
 1. Render публикует `bot.py` и обрабатывает POST-запросы от Telegram на адрес вида
    `https://piggee-telegram-mini-app.onrender.com/webhook`.
