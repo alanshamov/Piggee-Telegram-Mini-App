@@ -40,6 +40,39 @@ body.tg .btn{background:var(--tg-btn);color:var(--tg-btn-tx)}
 body.tg .btn.ghost,body.tg .btn.gray{background:var(--tg-bg2);color:var(--tg-tx)}
 body.tg .btn.danger{background:#b3382c;color:#fff}
 
+/* ---------- Тёмная тема ---------- */
+body.dark{
+  --bg:#1c1a17; --ink:#f3ede3; --muted:#b3a998; --faint:#7d7365;
+  --accent:#d99a3a; --accent-strong:#e8b45c; --accent-soft:#3a3126;
+  --gold:#e0a63c; --green:#5bb47a; --green-soft:#243a2c;
+  --line:#3a352e; --down:#d86a5a; --white:#2a2621;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+body.dark.tg{background:var(--tg-bg);color:var(--tg-tx)}
+body.dark .card{background:var(--white);border-color:var(--line);box-shadow:var(--shadow)}
+body.dark .cell{background:var(--bg);border-color:var(--line)}
+body.dark .cell.set{background:var(--accent-soft);border-color:#5a4a35}
+body.dark .cell.done{background:var(--green-soft);border-color:var(--green)}
+body.dark .cell.empty{color:var(--faint)}
+body.dark .field input{background:#241f1a;border-color:var(--line);color:var(--ink)}
+body.dark .field input:focus{border-color:var(--accent);background:#2b2620}
+body.dark .btn.gray{background:#35302a;color:var(--ink)}
+body.dark .btn.gray:hover{background:#3f3931}
+body.dark .btn.ghost{background:var(--accent-soft);color:var(--accent)}
+body.dark .btn.ghost:hover{background:#4a3f30}
+body.dark .progress{background:#35302a}
+body.dark .donut-bg{stroke:#3a352e}
+body.dark .bank-item{border-color:var(--line)}
+body.dark .tpl-item{background:var(--bg);border-color:var(--line);color:var(--ink)}
+body.dark .modal{background:var(--white);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+body.dark .overlay{background:rgba(0,0,0,.55)}
+
+/* ---------- Кнопка темы ---------- */
+.theme-toggle{position:fixed;top:calc(14px + var(--safe-top));right:14px;z-index:60;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--accent-soft);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;transition:transform .12s ease,background .15s ease}
+.theme-toggle:hover{transform:scale(1.06)}
+.theme-toggle:active{transform:scale(.95)}
+body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
+
 .screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0 1rem}
 .screen-head h1{font-size:1.45rem;margin:0;word-break:break-word}
 
@@ -156,6 +189,8 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
 <div id="app">
 <main>
   <noscript><p class="noscript">Для работы приложения включите JavaScript.</p></noscript>
+
+  <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
 
   <section id="screen-create">
     <div class="card welcome">
@@ -282,6 +317,41 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     TG.expand();
     TG.ready();
   }
+
+  // ---------- Тема (светлая/тёмная) ----------
+  var THEME_KEY = 'kopilka-theme';
+  var themeBtn = document.getElementById('theme-toggle');
+
+  function applyTheme(dark){
+    if(dark){ document.body.classList.add('dark'); }
+    else { document.body.classList.remove('dark'); }
+    if(themeBtn){
+      themeBtn.textContent = dark ? '🌙' : '☀️';
+      themeBtn.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
+    }
+    try{ localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); }catch(e){}
+  }
+
+  function toggleTheme(){
+    var nextDark = !document.body.classList.contains('dark');
+    applyTheme(nextDark);
+  }
+
+  function applySavedTheme(){
+    var saved = null;
+    try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+    if(saved === 'dark'){ applyTheme(true); return; }
+    if(saved === 'light'){ applyTheme(false); return; }
+    // авто: если внутри Telegram и у пользователя тёмная тема — включить тёмную
+    var tgDark = false;
+    if(TG){
+      try{ tgDark = TG.colorScheme === 'dark' || (TG.themeParams && TG.themeParams.bg_color && /^#0[0-9a-f]{5}$/i.test(TG.themeParams.bg_color)); }catch(e){}
+    }
+    applyTheme(tgDark);
+  }
+
+  if(themeBtn){ themeBtn.addEventListener('click', toggleTheme); }
+  applySavedTheme();
 
   function localLoad(){
     try{
