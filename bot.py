@@ -12,15 +12,21 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "ВСТАВЬ_СВОЙ_ТОКЕН_СЮДА")
 APP_URL = os.getenv("APP_URL", "https://alanshamov.github.io/Piggee-Telegram-Mini-App/kopilka.html")
 # На Render адрес выглядит так: https://<имя>-<рандом>.onrender.com
 WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "")
+# Баннер для приветствия — лежит в репозитории, раздаётся через GitHub Pages
+BANNER_URL = os.getenv("BANNER_URL", "https://alanshamov.github.io/Piggee-Telegram-Mini-App/banner-piggee-github.jpg")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 HELLO_TEXT = (
-    "\U0001F437 Привет! Я Piggee — твоя цифровая копилка.\n\n"
-    "Создай таблицу ячеек как на твоей настоящей копилке, "
-    "зачёркивай ячейку, когда кладёшь деньги, — и следи за прогрессом в процентах.\n\n"
-    "Нажми кнопку ниже, чтобы открыть копилку \u2193"
+    "\U0001F4B0 Привет! Я Piggee — твоя цифровая копилка.\n\n"
+    "Копилка физическая, а «цифровая копия» — это я: "
+    "слежу за прогрессом, не портя настоящую.\n\n"
+    "\U0001F4A1 Что я умею:\n"
+    "\u2022 создавать копилку — как таблицу на твоей коробке;\n"
+    "\u2022 зачёркивать ячейку, когда кладёшь деньги;\n"
+    "\u2022 сам считать накопленное, цель и прогресс в %.\n\n"
+    "\u2B07\U0001F447 Нажми кнопку и начинай копить!"
 )
 
 
@@ -30,13 +36,17 @@ async def cmd_start(message: Message):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="\U0001F437 Открыть копилку",
+                    text="\U0001F4B0 Открыть копилку",
                     web_app=WebAppInfo(url=APP_URL),
                 )
             ]
         ]
     )
-    await message.answer(HELLO_TEXT, reply_markup=keyboard)
+    caption = HELLO_TEXT
+    try:
+        await message.answer_photo(photo=BANNER_URL, caption=caption, reply_markup=keyboard)
+    except Exception:
+        await message.answer(caption, reply_markup=keyboard)
 
 
 async def handle_update(request: web.Request):
