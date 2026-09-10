@@ -169,7 +169,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
         <ellipse cx="44" cy="48" rx="4" ry="2.4" fill="#f0c06b" stroke="#9a6414" stroke-width="1.6"/>
       </svg>
       <h1>Моя копилка</h1>
-      <p>Цифровой трекер для твоей копилки: создай таблицу как на копилке, отметь ячейки — и система посчитает прогресс.</p>
+      <p>Цифровой трекер для вашей копилки: создайте таблицу как на копилке, отметьте ячейки — и система посчитает прогресс.</p>
       <div class="form-grid">
         <div class="field full">
           <label for="bank-name">Название</label>
@@ -184,6 +184,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
           <input id="bank-cols" type="number" min="1" max="12" value="6">
         </div>
         <button class="btn" id="btn-create">Создать копилку</button>
+        <button class="btn ghost" id="btn-template">Шаблон «Как у меня» 10×10</button>
         <div class="btn-line" id="my-banks-wrap" style="display:none">
           <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
         </div>
@@ -208,7 +209,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
         <button class="btn" id="btn-save">Сохранить копилку</button>
       </div>
       <p class="legend">
-        <span><i class="swatch"></i> пустая — нажми и впиши сумму</span>
+        <span><i class="swatch"></i> пустая — нажмите и впишите сумму</span>
         <span><i class="swatch s-done"></i> заполненная</span>
       </p>
       <div class="grid clickable" id="grid-fill"></div>
@@ -240,7 +241,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
           <div class="big" id="stat-filled">0&nbsp;₽</div>
           <div class="of">из <span id="stat-total">0&nbsp;₽</span> · осталось <span id="stat-left">0&nbsp;₽</span></div>
           <div class="progress"><i id="progress-bar"></i></div>
-          <div class="hint" id="stat-hint">Нажми на ячейку с суммой, которую положил в копилку, — она зачеркнётся.</div>
+          <div class="hint" id="stat-hint">Нажмите на ячейку с суммой, которую положили в копилку, — она зачеркнётся.</div>
         </div>
       </div>
       <p class="legend">
@@ -469,6 +470,33 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     show('screen-fill');
   }
 
+  function createTemplate(){
+    var name = ($('bank-name').value || '').trim().slice(0,30);
+    if(!name){
+      showError('Поле «Название» не заполнено. Придумайте название для копилки.');
+      return;
+    }
+    if(isNameTaken(name)){
+      showError('Копилка с таким названием уже существует. Придумайте другое название.');
+      return;
+    }
+    var rows = 10, cols = 10;
+    var cells = [];
+    for(var r=0;r<rows;r++){
+      for(var c=0;c<cols;c++){
+        var val = (r*cols + c + 1) * 10;
+        cells.push({v:val, d:false});
+      }
+    }
+    var bank = { name: name, rows: rows, cols: cols, cells: cells };
+    saveBank(bank);
+    store.currentName = name;
+    saveStore();
+    currentBank = bank;
+    renderFill(bank);
+    show('screen-fill');
+  }
+
   function showError(msg){
     openModal(
       '<h3>Ошибка</h3>' +
@@ -516,7 +544,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     var done = bankDoneCount(bank), all = bank.cells.length;
     $('stat-hint').textContent = done === all
       ? 'Поздравляем! Все ячейки зачёркнуты — копилка полная!'
-      : 'Зачёркнуто ' + done + ' из ' + all + ' ячеек. Нажми на ячейку с суммой, которую положил в копилку.';
+      : 'Зачёркнуто ' + done + ' из ' + all + ' ячеек. Нажмите на ячейку с суммой, которую положили в копилку.';
     renderGrid('grid-track', bank, false);
   }
 
@@ -607,7 +635,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
       var cur = (c.v !== null && c.v !== undefined) ? c.v : '';
       openModal(
         '<h3>Заполнение по порядку</h3>' +
-        '<p class="muted">Ячейка ' + (idx+1) + ' из ' + bank.cells.length + ' — впиши сумму, как на твоей копилке. Пропусти, если ячейки нет.</p>' +
+        '<p class="muted">Ячейка ' + (idx+1) + ' из ' + bank.cells.length + ' — впишите сумму, как на вашей копилке. Пропустите, если ячейки нет.</p>' +
         '<div class="field"><input id="wiz-input" type="number" min="0" step="1" placeholder="Сумма" value="' + cur + '"></div>' +
         '<div class="row">' +
           '<button class="btn gray" data-act="skip">Пропустить</button>' +
@@ -713,6 +741,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   });
 
   $('btn-create').addEventListener('click', createBank);
+  $('btn-template').addEventListener('click', createTemplate);
 
   $('bank-name').addEventListener('keydown', function(e){
     if(e.key === 'Enter') createBank();
