@@ -75,13 +75,12 @@
 2. Или запусти внутри Telegram: отправь боту [**Piggee**](https://t.me/piggee_bot) команду `/start` и нажми кнопку **«Открыть копилку»**.
 3. Данные хранятся только у тебя в браузере / в твоём Telegram-профиле.
 ---
-**При создании использовался** [**Мультитул**](https://multitool.works/)
+**При создании использовался** [**MultiTool**](https://multitool.works/)
 
 ## Автор
 
 [ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
 
----
 <sub>
-  <font color="#6b7280">При создании использовался Мультитул</font>
+  <font color="#6b7280">Проект создан с помощью ассистента [**MultiTool**](https://multitool.works/). Код, дизайн и логика разработаны совместно с AI-инструментом MultiTool.</font>
 </sub>
