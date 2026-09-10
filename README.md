@@ -2,7 +2,7 @@
 
 # Piggee — Моя копилка 💰
 
-[![Telegram](https://img.shields.io/badge/Бот-%40piggee_bot-0088cc?logo=telegram)][bot]
+![Telegram](https://img.shields.io/badge/Бот-%40piggee_bot-0088cc?logo=telegram)
 
 **Piggee** — цифровой трекер накоплений, цифровой компаньон к твоей физической копилке.
 Создай таблицу ячеек как на настоящей копилке, зачёркивай ячейку, когда кладёшь деньги, — и следи за прогрессом в процентах.
