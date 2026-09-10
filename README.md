@@ -1,5 +1,5 @@
 ![Piggee Banner](banner-piggee-github.jpg)
-![Telegram](https://img.shields.io/badge/Перейти-%40piggee_bot-0088cc?logo=telegram)
+![Telegram](https://img.shields.io/badge/Перейти-%40piggee_bot-0088cc?logo=telegram) - открыть Mini-App.
 # Piggee — Моя копилка 💰
 
 **Piggee** — цифровой трекер накоплений, цифровой компаньон к твоей физической копилке.
