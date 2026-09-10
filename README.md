@@ -74,8 +74,6 @@
 1. Открой `kopilka.html` в любом браузере — работает сразу.
 2. Или запусти внутри Telegram: отправь боту [**Piggee**](https://t.me/piggee_bot) команду `/start` и нажми кнопку **«Открыть копилку»**.
 3. Данные хранятся только у тебя в браузере / в твоём Telegram-профиле.
-
-Бот и Мини-приложение Telegram доступны тут - ![Telegram](https://img.shields.io/badge/Бот-%40piggee_bot-0088cc?logo=telegram)
 ---
 При создании использовался [Мультитул](https://multitool.works/).
 
