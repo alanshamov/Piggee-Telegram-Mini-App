@@ -35,6 +35,8 @@ button:active{transform:scale(.97)}
 .btn.gray:hover{background:#e4d7bf}
 .btn.danger{background:var(--down);color:#fff}
 .btn.danger:hover{background:#96291f}
+.btn.success{background:var(--green);color:#fff}
+.btn.success:hover{background:#256c41}
 .btn.small{padding:.35rem .7rem;font-size:.85rem}
 /* Кнопки всегда используют собственную палитру — не зависят от темы Telegram */
 .btn.ghost{background:var(--accent-soft);color:var(--accent-strong);border:1px solid var(--line)}
@@ -104,11 +106,11 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 .toolbar .spacer{flex:1}
 .toolbar .btn{text-align:center}
 
-.grid{display:grid;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:50px;min-width:40px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease}
+.grid{display:grid;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px}
+.cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:52px;min-width:46px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:var(--ink);font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease;overflow:hidden}
 .grid.clickable .cell{cursor:pointer}
 .grid.clickable .cell:hover{border-color:var(--accent)}
-.cell .val{line-height:1.1;text-align:center;padding:0 .15rem}
+.cell .val{line-height:1.1;text-align:center;padding:0 .1rem;max-width:100%;word-break:break-word}
 .cell.empty{border-style:dashed;color:var(--faint);font-weight:500}
 .cell.set{background:var(--accent-soft);border-color:#e0c98f}
 .cell.done{background:var(--green-soft);border-color:var(--green)}
@@ -139,9 +141,9 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 .swatch.s-done{background:var(--green-soft);border-color:var(--green)}
 
 .bank-list{display:flex;flex-direction:column;gap:.5rem;max-height:50vh;overflow-y:auto;margin:.7rem 0;-webkit-overflow-scrolling:touch}
-.bank-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .12s ease,background .12s ease}
+.bank-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;color:var(--ink);background:var(--bg);transition:border-color .12s ease,background .12s ease}
 .bank-item:hover{border-color:var(--accent);background:var(--accent-soft)}
-.bank-item .bi-name{font-weight:700;font-size:.9rem}
+.bank-item .bi-name{font-weight:700;font-size:.9rem;color:var(--ink)}
 .bank-item .bi-meta{font-size:.78rem;color:var(--muted)}
 .bank-item .bi-del{background:none;color:var(--faint);padding:.05rem .3rem;font-size:1.1rem;line-height:1;border-radius:6px}
 .bank-item .bi-del:hover{color:var(--down);background:#fee2e0}
@@ -170,8 +172,8 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
   .welcome .pig{width:60px;height:60px}
   .welcome h1{font-size:1.35rem}
   .form-grid{gap:.6rem;max-width:100%}
-  .cell{min-height:44px;font-size:.8rem;border-radius:6px}
-  .grid{gap:4px}
+  .cell{min-height:40px;min-width:0;font-size:.62rem;border-radius:6px}
+  .grid{gap:3px}
   .bank-head{flex-direction:column;text-align:center}
   .donut-wrap{width:110px;height:110px}
   .donut-center b{font-size:1.3rem}
@@ -254,7 +256,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       <div class="toolbar">
         <button class="btn full" id="btn-wizard">Заполнить по порядку</button>
         <button class="btn gray" id="btn-clear">Очистить</button>
-        <button class="btn" id="btn-save">Сохранить копилку</button>
+        <button class="btn success" id="btn-save">Сохранить</button>
       </div>
       <p class="legend">
         <span><i class="swatch"></i> пустая — нажмите и впишите сумму</span>
