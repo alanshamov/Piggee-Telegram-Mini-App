@@ -36,9 +36,16 @@ button:active{transform:scale(.97)}
 .btn.danger{background:var(--down);color:#fff}
 .btn.danger:hover{background:#96291f}
 .btn.small{padding:.35rem .7rem;font-size:.85rem}
-body.tg .btn{background:var(--tg-btn);color:var(--tg-btn-tx)}
-body.tg .btn.ghost,body.tg .btn.gray{background:var(--tg-bg2);color:var(--tg-tx)}
-body.tg .btn.danger{background:#b3382c;color:#fff}
+/* Кнопки всегда используют собственную палитру — не зависят от темы Telegram */
+.btn.ghost{background:var(--accent-soft);color:var(--accent-strong);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--accent-soft)}
+body.dark .btn{background:var(--accent);color:#fff}
+body.dark .btn:hover{background:var(--accent-strong)}
+body.dark .btn.ghost{background:var(--accent-soft);color:var(--accent);border-color:var(--line)}
+body.dark .btn.ghost:hover{background:#4a3f30}
+body.dark .btn.gray{background:#35302a;color:var(--ink)}
+body.dark .btn.gray:hover{background:#3f3931}
+body.dark .btn.danger{background:var(--down);color:#fff}
 
 /* ---------- Тёмная тема ---------- */
 body.dark{
@@ -56,10 +63,6 @@ body.dark .cell.done{background:var(--green-soft);border-color:var(--green)}
 body.dark .cell.empty{color:var(--faint)}
 body.dark .field input{background:#241f1a;border-color:var(--line);color:var(--ink)}
 body.dark .field input:focus{border-color:var(--accent);background:#2b2620}
-body.dark .btn.gray{background:#35302a;color:var(--ink)}
-body.dark .btn.gray:hover{background:#3f3931}
-body.dark .btn.ghost{background:var(--accent-soft);color:var(--accent)}
-body.dark .btn.ghost:hover{background:#4a3f30}
 body.dark .progress{background:#35302a}
 body.dark .donut-bg{stroke:#3a352e}
 body.dark .bank-item{border-color:var(--line)}
@@ -68,16 +71,17 @@ body.dark .modal{background:var(--white);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 body.dark .overlay{background:rgba(0,0,0,.55)}
 
 /* ---------- Кнопка темы ---------- */
-.theme-toggle{position:fixed;top:calc(14px + var(--safe-top));right:14px;z-index:60;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--accent-soft);border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;transition:transform .12s ease,background .15s ease}
+.theme-toggle{width:40px;height:40px;border-radius:50%;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-soft);border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:transform .12s ease,background .15s ease}
 .theme-toggle:hover{transform:scale(1.06)}
 .theme-toggle:active{transform:scale(.95)}
 body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
 .screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0 1rem}
 .screen-head h1{font-size:1.45rem;margin:0;word-break:break-word}
+.theme-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:.2rem}
+.theme-label{font-weight:600;color:var(--muted);font-size:.95rem}
 
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem}
-body.tg .card{background:var(--tg-bg2);border-color:transparent;box-shadow:none}
 
 .welcome{text-align:center;padding:2rem 1.25rem}
 .welcome .pig{width:76px;height:76px;margin:0 auto .8rem}
@@ -98,9 +102,10 @@ body.tg .card{background:var(--tg-bg2);border-color:transparent;box-shadow:none}
 
 .toolbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:1rem 0 .75rem}
 .toolbar .spacer{flex:1}
+.toolbar .btn{text-align:center}
 
-.grid{display:grid;gap:6px}
-.cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:50px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease}
+.grid{display:grid;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:50px;min-width:40px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease}
 .grid.clickable .cell{cursor:pointer}
 .grid.clickable .cell:hover{border-color:var(--accent)}
 .cell .val{line-height:1.1;text-align:center;padding:0 .15rem}
@@ -135,7 +140,6 @@ body.tg .card{background:var(--tg-bg2);border-color:transparent;box-shadow:none}
 
 .bank-list{display:flex;flex-direction:column;gap:.5rem;max-height:50vh;overflow-y:auto;margin:.7rem 0;-webkit-overflow-scrolling:touch}
 .bank-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .12s ease,background .12s ease}
-body.tg .bank-item{background:var(--tg-bg);border-color:transparent}
 .bank-item:hover{border-color:var(--accent);background:var(--accent-soft)}
 .bank-item .bi-name{font-weight:700;font-size:.9rem}
 .bank-item .bi-meta{font-size:.78rem;color:var(--muted)}
@@ -143,17 +147,14 @@ body.tg .bank-item{background:var(--tg-bg);border-color:transparent}
 .bank-item .bi-del:hover{color:var(--down);background:#fee2e0}
 .tpl-item{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:.8rem .9rem;width:100%;text-align:left;font-weight:700;font-size:.95rem;color:var(--ink);transition:border-color .12s ease,background .12s ease}
 .tpl-item:hover{border-color:var(--accent);background:var(--accent-soft)}
-body.tg .tpl-item{background:var(--tg-bg);border-color:transparent}
 .tpl-item .tpl-name{display:inline-block}
 .empty-list{text-align:center;color:var(--muted);padding:1.5rem 0;font-size:.9rem}
 
 .footer{color:var(--faint);font-size:.75rem;text-align:center;margin-top:2rem;padding-bottom:var(--safe-bot)}
 
 .overlay{position:fixed;inset:0;background:rgba(43,33,24,.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50;animation:fade .15s ease}
-body.tg .overlay{background:rgba(0,0,0,.4)}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .modal{background:var(--white);border-radius:var(--radius);box-shadow:0 20px 60px rgba(43,33,24,.28);padding:1.4rem;width:100%;max-width:400px;animation:rise .2s ease;max-height:90vh;overflow-y:auto}
-body.tg .modal{background:var(--tg-bg2);max-width:95vw}
 @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 .modal h3{margin:0 0 .35rem;font-size:1.05rem}
 .modal p.muted{color:var(--muted);font-size:.85rem;margin:0 0 1rem}
@@ -180,7 +181,10 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   .modal h3{font-size:1rem}
   .screen-head h1{font-size:1.2rem}
   .card{padding:1rem}
-  .toolbar{gap:.4rem}
+  .toolbar{gap:.4rem;display:grid;grid-template-columns:1fr 1fr}
+  .toolbar .full{grid-column:1/-1}
+  .toolbar .btn{width:100%}
+  .toolbar .spacer{display:none}
   .bank-item{padding:.5rem .7rem}
 }
 </style>
@@ -190,8 +194,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
 <main>
   <noscript><p class="noscript">Для работы приложения включите JavaScript.</p></noscript>
 
-  <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
-
+  
   <section id="screen-create">
     <div class="card welcome">
       <svg class="pig" viewBox="0 0 64 64" aria-hidden="true">
@@ -227,6 +230,10 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
         <div class="btn-line" id="my-banks-wrap" style="display:none">
           <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
         </div>
+        <div class="theme-row">
+          <span class="theme-label">Тема</span>
+          <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+        </div>
       </div>
       <div class="preview">
         <h2>Предпросмотр</h2>
@@ -238,13 +245,15 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   <section id="screen-fill" class="hidden">
     <div class="screen-head">
       <h1 id="fill-title">Заполните ячейки</h1>
-      <button class="btn ghost" id="btn-back-create">← Назад</button>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+        <button class="btn ghost" id="btn-back-create">← Назад</button>
+      </div>
     </div>
     <div class="card">
       <div class="toolbar">
-        <button class="btn" id="btn-wizard">Заполнить по порядку</button>
+        <button class="btn full" id="btn-wizard">Заполнить по порядку</button>
         <button class="btn gray" id="btn-clear">Очистить</button>
-        <span class="spacer"></span>
         <button class="btn" id="btn-save">Сохранить копилку</button>
       </div>
       <p class="legend">
@@ -258,7 +267,8 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   <section id="screen-track" class="hidden">
     <div class="screen-head">
       <h1 id="track-title">Моя копилка</h1>
-      <div style="display:flex;gap:.5rem">
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
         <button class="btn ghost small" id="btn-edit">Редактировать</button>
         <button class="btn small" id="btn-menu">Меню</button>
       </div>
@@ -320,15 +330,19 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
 
   // ---------- Тема (светлая/тёмная) ----------
   var THEME_KEY = 'kopilka-theme';
-  var themeBtn = document.getElementById('theme-toggle');
+  var themeBtns = document.querySelectorAll('.theme-toggle');
+
+  function updateThemeButtons(dark){
+    themeBtns.forEach(function(b){
+      b.textContent = dark ? '🌙' : '☀️';
+      b.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
+    });
+  }
 
   function applyTheme(dark){
     if(dark){ document.body.classList.add('dark'); }
     else { document.body.classList.remove('dark'); }
-    if(themeBtn){
-      themeBtn.textContent = dark ? '🌙' : '☀️';
-      themeBtn.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
-    }
+    updateThemeButtons(dark);
     try{ localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); }catch(e){}
   }
 
@@ -350,7 +364,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     applyTheme(tgDark);
   }
 
-  if(themeBtn){ themeBtn.addEventListener('click', toggleTheme); }
+  themeBtns.forEach(function(b){ b.addEventListener('click', toggleTheme); });
   applySavedTheme();
 
   function localLoad(){
@@ -505,7 +519,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     var rows = clampInt($('bank-rows').value, 1, 20, 5);
     var cols = clampInt($('bank-cols').value, 1, 12, 6);
     var g = $('preview-grid');
-    g.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+    g.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
     g.innerHTML = '';
     for(var i=0;i<rows*cols;i++){
       var d = document.createElement('div');
@@ -708,7 +722,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
 
   function renderGrid(containerId, bank, editable){
     var g = $(containerId);
-    g.style.gridTemplateColumns = 'repeat(' + bank.cols + ', 1fr)';
+    g.style.gridTemplateColumns = 'repeat(' + bank.cols + ', minmax(0, 1fr))';
     g.innerHTML = '';
     for(var i=0;i<bank.cells.length;i++){
       var c = bank.cells[i];
@@ -952,6 +966,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   });
 
   $('btn-back-create').addEventListener('click', function(){
+    renderPreview();
     show('screen-create');
     updateMyBanksBtn();
   });
@@ -994,6 +1009,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   });
 
   $('btn-menu').addEventListener('click', function(){
+    renderPreview();
     show('screen-create');
     updateMyBanksBtn();
   });
