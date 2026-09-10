@@ -106,7 +106,3 @@
 - **Предпросмотр не пропадает** при возврате на главный экран
 
 ---
-
-## Автор
-
-[ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
