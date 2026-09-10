@@ -968,9 +968,21 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     if(e.key === 'Enter') createBank();
   });
 
-  ['bank-rows','bank-cols'].forEach(function(id){
-    $(id).addEventListener('input', renderPreview);
-  });
+  function clampFieldInput(input, min, max){
+    var onInput = function(){
+      var v = parseInt(input.value, 10);
+      if(isNaN(v)){ input.value = ''; renderPreview(); return; }
+      if(v < min){ input.value = min; }
+      else if(v > max){ input.value = max; }
+      renderPreview();
+    };
+    input.addEventListener('input', onInput);
+    input.addEventListener('change', onInput);
+    input.addEventListener('blur', onInput);
+  }
+
+  clampFieldInput($('bank-rows'), 1, 20);
+  clampFieldInput($('bank-cols'), 1, 10);
 
   $('btn-back-create').addEventListener('click', function(){
     renderPreview();
