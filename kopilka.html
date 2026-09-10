@@ -108,6 +108,10 @@ body.tg .bank-item{background:var(--tg-bg);border-color:transparent}
 .bank-item .bi-meta{font-size:.78rem;color:var(--muted)}
 .bank-item .bi-del{background:none;color:var(--faint);padding:.05rem .3rem;font-size:1.1rem;line-height:1;border-radius:6px}
 .bank-item .bi-del:hover{color:var(--down);background:#fee2e0}
+.tpl-item{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:.8rem .9rem;width:100%;text-align:left;font-weight:700;font-size:.95rem;color:var(--ink);transition:border-color .12s ease,background .12s ease}
+.tpl-item:hover{border-color:var(--accent);background:var(--accent-soft)}
+body.tg .tpl-item{background:var(--tg-bg);border-color:transparent}
+.tpl-item .tpl-name{display:inline-block}
 .empty-list{text-align:center;color:var(--muted);padding:1.5rem 0;font-size:.9rem}
 
 .footer{color:var(--faint);font-size:.75rem;text-align:center;margin-top:2rem;padding-bottom:var(--safe-bot)}
@@ -184,7 +188,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
           <input id="bank-cols" type="number" min="1" max="12" value="6">
         </div>
         <button class="btn" id="btn-create">Создать копилку</button>
-        <button class="btn ghost" id="btn-template">Шаблон «Как у меня» 10×10</button>
+        <button class="btn ghost" id="btn-template">Шаблоны</button>
         <div class="btn-line" id="my-banks-wrap" style="display:none">
           <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
         </div>
@@ -470,6 +474,132 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
     show('screen-fill');
   }
 
+  // Название сетки под количество ячеек: подбираем rows/cols, чтобы rows*cols = cells
+  function gridSize(cells){
+    var rows = 10, cols = Math.ceil(cells / 10);
+    return { rows: rows, cols: cols };
+  }
+
+  var TEMPLATES = [
+    { label: '«Лесенка» на 50 500\u20bd', rows: 10, cols: 10, name: 'Лесенка', build: ladderCells },
+    { label: 'на 10 000\u20bd', name: '', build: function(){ return genCells([[72,50],[14,100],[10,200],[2,500],[2,1000]]); } },
+    { label: 'на 25 000\u20bd', name: '', build: function(){ return genCells([[40,50],[16,100],[17,200],[18,500],[9,1000]]); } },
+    { label: 'на 50 000\u20bd', name: '', build: function(){ return genCells([[30,50],[17,100],[14,200],[14,500],[13,1000],[12,2000]]); } },
+    { label: 'на 75 000\u20bd', name: '', build: function(){ return genCells([[20,100],[20,200],[20,500],[21,1000],[19,2000]]); } },
+    { label: 'на 100 000\u20bd', name: '', build: function(){ return genCells([[26,100],[17,200],[16,500],[17,1000],[17,2000],[7,5000]]); } },
+    { label: 'на 150 000\u20bd', name: '', build: function(){ return genCells([[25,200],[20,500],[20,1000],[20,2000],[15,5000]]); } },
+    { label: 'на 250 000\u20bd', name: '', build: function(){ return genCells([[16,500],[25,1000],[26,2000],[33,5000]]); } },
+    { label: 'на 500 000\u20bd', name: '', build: function(){ return genCells([[8,500],[20,1000],[18,2000],[20,5000],[34,10000]]); } },
+    { label: 'на 1 000 000\u20bd', name: '', build: function(){ return genCells([[6,1000],[22,2000],[20,5000],[19,10000],[33,20000]]); } }
+  ];
+
+  function ladderCells(){
+    var cells = [];
+    for(var i=0;i<100;i++) cells.push({v:(i+1)*10, d:false});
+    return cells;
+  }
+
+  // Строит сетку из разнородных номиналов без 3+ одинаковых подряд в строке.
+  // specs: [[count, value], ...]. Сетка ровная: число ячеек = rows*cols (по умолчанию 10 в ряд).
+  function genCells(specs){
+    var vals = [], counts = [];
+    for(var s=0;s<specs.length;s++){ vals.push(specs[s][1]); counts.push(specs[s][0]); }
+    var N = 0;
+    for(var d=0; d<vals.length; d++) N += counts[d];
+    var cols = 10;
+    var out = [];
+    var prev1 = null, prev2 = null;
+    for(var i=0;i<N;i++){
+      if(i % cols === 0){ prev1 = null; prev2 = null; }
+      var legal = [];
+      for(var d=0; d<vals.length; d++){
+        if(counts[d] <= 0) continue;
+        if(vals[d] === prev1 && vals[d] === prev2) continue;
+        legal.push(d);
+      }
+      if(legal.length === 0){
+        for(var d=0; d<vals.length; d++){ if(counts[d] > 0) legal.push(d); }
+      }
+      var maxc = -1;
+      for(var li=0; li<legal.length; li++){ if(counts[legal[li]] > maxc) maxc = counts[legal[li]]; }
+      var top = [];
+      for(var li=0; li<legal.length; li++){ if(counts[legal[li]] === maxc) top.push(legal[li]); }
+      var pick = top[Math.floor(Math.random() * top.length)];
+      counts[pick]--;
+      out.push(vals[pick]);
+      prev2 = prev1; prev1 = vals[pick];
+    }
+    // перемешиваем, сохраняя запрет трёх подряд
+    for(var iter=0; iter<N*8; iter++){
+      var a = Math.floor(Math.random()*N), b = Math.floor(Math.random()*N);
+      if(a === b || out[a] === out[b]) continue;
+      var t = out[a]; out[a] = out[b]; out[b] = t;
+      if(hasTriple(out, cols)){ var t2 = out[a]; out[a] = out[b]; out[b] = t2; }
+    }
+    var cells = [];
+    for(var i=0;i<N;i++) cells.push({v:out[i], d:false});
+    return cells;
+  }
+
+  function hasTriple(v, cols){
+    for(var i=0;i+2<v.length;i++){
+      if(((i % cols) + 2) >= cols) continue;
+      if(v[i] === v[i+1] && v[i+1] === v[i+2]) return true;
+    }
+    return false;
+  }
+
+  function shuffle(arr){
+    for(var i=arr.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  function createFromTemplate(t){
+    var baseName = t.name || ('Копилка ' + t.label.replace(/[«»]/g,''));
+    var name = baseName;
+    var suffix = 2;
+    while(isNameTaken(name)){
+      name = baseName + ' (' + suffix + ')';
+      suffix++;
+    }
+    store.currentName = name;
+    var cells = t.build();
+    var size = gridSize(cells.length);
+    var bank = { name: name, rows: size.rows, cols: size.cols, cells: cells };
+    saveBank(bank);
+    store.currentName = name;
+    saveStore();
+    currentBank = bank;
+    renderFill(bank);
+    show('screen-fill');
+  }
+
+  function showTemplates(){
+    var html = '<h3>Шаблоны копилок</h3>';
+    html += '<p class="muted">Выберите готовую копилку — создадите сразу с нужной суммой.</p>';
+    html += '<div class="bank-list">';
+    for(var i=0;i<TEMPLATES.length;i++){
+      var t = TEMPLATES[i];
+      html += '<button class="tpl-item" data-idx="' + i + '"><span class="tpl-name">' + t.label + '</span></button>';
+    }
+    html += '</div>';
+    html += '<div class="row"><button class="btn ghost" data-act="close">Закрыть</button></div>';
+    openModal(html);
+
+    $('modal').querySelector('[data-act="close"]').addEventListener('click', closeModal);
+    $('modal').querySelectorAll('.tpl-item').forEach(function(b){
+      b.addEventListener('click', function(){
+        var idx = parseInt(b.getAttribute('data-idx'), 10);
+        var t = TEMPLATES[idx];
+        closeModal();
+        createFromTemplate(t);
+      });
+    });
+  }
+
   function createTemplate(){
     var name = ($('bank-name').value || '').trim().slice(0,30);
     if(!name){
@@ -741,7 +871,7 @@ body.tg .modal{background:var(--tg-bg2);max-width:95vw}
   });
 
   $('btn-create').addEventListener('click', createBank);
-  $('btn-template').addEventListener('click', createTemplate);
+  $('btn-template').addEventListener('click', showTemplates);
 
   $('bank-name').addEventListener('keydown', function(e){
     if(e.key === 'Enter') createBank();
