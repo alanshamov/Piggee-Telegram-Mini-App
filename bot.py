@@ -3,7 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from aiogram.types import Update, Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
@@ -40,7 +40,8 @@ async def cmd_start(message: Message):
 
 
 async def handle_update(request: web.Request):
-    update = await request.json()
+    data = await request.json()
+    update = Update.model_validate(data)
     await dp.feed_update(bot, update)
     return web.Response()
 
