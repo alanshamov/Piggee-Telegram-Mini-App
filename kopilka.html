@@ -8,6 +8,7 @@
 <style>
 :root{
   --bg:#faf6ef; --ink:#2b2118; --muted:#8a7a66; --faint:#b8a98f;
+  --cell-font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --cell-size:.72rem;
   --accent:#c07f1d; --accent-strong:#9a6414; --accent-soft:#f6ecd9;
   --gold:#e0a63c; --green:#2e7d4f; --green-soft:#e3f0e8;
   --line:#e9ddc7; --down:#b3382c; --white:#fffdf8;
@@ -79,6 +80,24 @@ body.dark .overlay{background:rgba(0,0,0,.55)}
 .theme-toggle:active{transform:scale(.95)}
 body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
+/* ---------- Кнопка шрифта ---------- */
+.font-toggle{width:40px;height:40px;border-radius:50%;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-soft);border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:transform .12s ease,background .15s ease}
+.font-toggle:hover{transform:scale(1.06)}
+.font-toggle:active{transform:scale(.95)}
+body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
+
+/* ---------- Модалка шрифта ---------- */
+.font-list{display:flex;flex-direction:column;gap:.5rem;margin:.6rem 0}
+.font-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.6rem .8rem;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);cursor:pointer;font:inherit;text-align:left;width:100%;transition:border-color .12s ease,background .12s ease}
+.font-item:hover{border-color:var(--accent)}
+.font-item.active{border-color:var(--accent);background:var(--accent-soft)}
+.font-item .f-name{font-size:.85rem;font-weight:600}
+.font-item .f-prev{font-size:1.05rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.size-row{display:flex;align-items:center;justify-content:center;gap:1rem;margin:.8rem 0}
+.size-row .size-btn{width:44px;height:44px;border-radius:10px;font-size:1.3rem;font-weight:700;background:var(--accent-soft);color:var(--accent-strong);border:1px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.size-row .size-val{font-size:1.05rem;font-weight:700;min-width:3.5rem;text-align:center;color:var(--ink)}
+.size-hint{color:var(--muted);font-size:.8rem;text-align:center;margin:0 0 .2rem}
+
 .screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.2rem 0 1rem;padding:.85rem 1rem;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--ink)}
 .screen-head h1{font-size:1.45rem;margin:0;word-break:break-word;color:var(--ink)}
 .theme-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:.2rem}
@@ -111,7 +130,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 .cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:52px;min-width:46px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:var(--ink);font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease;overflow:hidden}
 .grid.clickable .cell{cursor:pointer}
 .grid.clickable .cell:hover{border-color:var(--accent)}
-.cell .val{line-height:1.1;text-align:center;padding:0 .1rem;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:.72rem}
+.cell .val{line-height:1.1;text-align:center;padding:0 .1rem;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:var(--cell-size);font-family:var(--cell-font)}
 .cell.empty{border-style:dashed;color:var(--faint);font-weight:500}
 .cell.set{background:var(--accent-soft);border-color:#e0c98f}
 .cell.done{background:var(--green-soft);border-color:var(--green)}
@@ -237,6 +256,10 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
           <span class="theme-label">Тема</span>
           <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
         </div>
+        <div class="theme-row">
+          <span class="theme-label">Шрифт</span>
+          <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
+        </div>
       </div>
       <div class="preview">
         <h2>Предпросмотр</h2>
@@ -250,6 +273,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       <h1 id="fill-title">Заполните ячейки</h1>
       <div style="display:flex;gap:.5rem;align-items:center">
         <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+        <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
         <button class="btn ghost" id="btn-back-create">← Назад</button>
       </div>
     </div>
@@ -272,6 +296,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       <h1 id="track-title">Моя копилка</h1>
       <div style="display:flex;gap:.5rem;align-items:center">
         <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+        <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
         <button class="btn ghost small" id="btn-edit">Редактировать</button>
         <button class="btn small" id="btn-menu">Меню</button>
       </div>
@@ -353,6 +378,109 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     var nextDark = !document.body.classList.contains('dark');
     applyTheme(nextDark);
   }
+
+  // ---------- Шрифт ячеек ----------
+  var FONT_KEY = 'kopilka-cell-font';
+  var FONTS = [
+    { id:'system', name:'Стандартный', css:'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif' },
+    { id:'mono',   name:'Моноширинный', css:'ui-monospace,"Cascadia Mono","Consolas","Courier New",monospace' },
+    { id:'serif',  name:'Засечки', css:'Georgia,"Times New Roman",serif' },
+    { id:'round',  name:'Округлый', css:'Verdana,"Segoe UI",Tahoma,sans-serif' },
+    { id:'script', name:'Рукописный', css:'"Segoe Script","Comic Sans MS","Comic Sans",cursive' },
+    { id:'narrow', name:'Плотный', css:'"Arial Narrow","Segoe UI",Arial,sans-serif' }
+  ];
+  var FONT_SIZE_MIN = 10;
+  var FONT_SIZE_MAX = 18;
+  var fontBtns = document.querySelectorAll('.font-toggle');
+  var cellFont = 'system';
+  var cellSize = 12;
+
+  function cellFontCss(id){
+    for(var i=0;i<FONTS.length;i++){
+      if(FONTS[i].id === id) return FONTS[i].css;
+    }
+    return FONTS[0].css;
+  }
+
+  function applyCellFont(){
+    var root = document.documentElement.style;
+    root.setProperty('--cell-font', cellFontCss(cellFont));
+    root.setProperty('--cell-size', cellSize + 'px');
+  }
+
+  function saveCellPrefs(){
+    try{
+      localStorage.setItem(FONT_KEY, JSON.stringify({ font: cellFont, size: cellSize }));
+    }catch(e){}
+  }
+
+  function loadCellPrefs(){
+    try{
+      var raw = localStorage.getItem(FONT_KEY);
+      if(raw){
+        var s = JSON.parse(raw);
+        if(s && s.font) cellFont = s.font;
+        if(s && typeof s.size === 'number') cellSize = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, s.size));
+        else cellSize = 12;
+      }
+    }catch(e){}
+    cellSize = Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, cellSize));
+    applyCellFont();
+  }
+
+  function showFontModal(){
+    var itemsHtml = '';
+    for(var i=0;i<FONTS.length;i++){
+      var f = FONTS[i];
+      itemsHtml +=
+        '<button type="button" class="font-item' + (f.id === cellFont ? ' active' : '') + '" data-font="' + f.id + '" style="font-family:' + f.css + '">' +
+          '<span class="f-prev">1 000</span>' +
+          '<span class="f-name">' + f.name + '</span>' +
+        '</button>';
+    }
+    openModal(
+      '<h3>Шрифт цифр в ячейках</h3>' +
+      '<p class="muted">Выберите шрифт и подберите размер — так цифры будут читаться лучше.</p>' +
+      '<div class="font-list">' + itemsHtml + '</div>' +
+      '<div class="size-hint">Размер цифр</div>' +
+      '<div class="size-row">' +
+        '<button type="button" class="size-btn" data-size="minus">−</button>' +
+        '<span class="size-val" id="size-val">' + cellSize + ' px</span>' +
+        '<button type="button" class="size-btn" data-size="plus">+</button>' +
+      '</div>' +
+      '<div class="row"><button class="btn" data-act="ok">Готово</button></div>'
+    );
+
+    $('modal').querySelectorAll('.font-item').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        cellFont = btn.getAttribute('data-font');
+        applyCellFont();
+        $('modal').querySelectorAll('.font-item').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      });
+    });
+
+    function paintSize(){
+      $('size-val').textContent = cellSize + ' px';
+      var minus = $('modal').querySelector('[data-size="minus"]');
+      var plus = $('modal').querySelector('[data-size="plus"]');
+      minus.disabled = cellSize <= FONT_SIZE_MIN;
+      plus.disabled = cellSize >= FONT_SIZE_MAX;
+    }
+    paintSize();
+    $('modal').querySelector('[data-size="minus"]').addEventListener('click', function(){
+      if(cellSize > FONT_SIZE_MIN){ cellSize--; applyCellFont(); paintSize(); }
+    });
+    $('modal').querySelector('[data-size="plus"]').addEventListener('click', function(){
+      if(cellSize < FONT_SIZE_MAX){ cellSize++; applyCellFont(); paintSize(); }
+    });
+    $('modal').querySelector('[data-act="ok"]').addEventListener('click', function(){
+      saveCellPrefs();
+      closeModal();
+    });
+  }
+
+  fontBtns.forEach(function(b){ b.addEventListener('click', showFontModal); });
+  loadCellPrefs();
 
   function applySavedTheme(){
     var saved = null;
