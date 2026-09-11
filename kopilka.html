@@ -100,7 +100,7 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
 .screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.2rem 0 1rem;padding:.85rem 1rem;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--ink)}
 .screen-head h1{font-size:1.45rem;margin:0;word-break:break-word;color:var(--ink)}
-.theme-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:.2rem}
+.theme-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.7rem;margin-top:.2rem}
 .theme-label{font-weight:600;color:var(--muted);font-size:.95rem}
 
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem}
@@ -253,12 +253,8 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
           <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
         </div>
         <div class="theme-row">
-          <span class="theme-label">Тема</span>
-          <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
-        </div>
-        <div class="theme-row">
-          <span class="theme-label">Шрифт</span>
-          <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
+          <button type="button" class="btn ghost" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек" id="btn-font-main">🔤 Шрифт</button>
+          <button type="button" class="btn ghost" aria-label="Переключить тему" title="Сменить тему" id="btn-theme-main">☀️ Тема</button>
         </div>
       </div>
       <div class="preview">
@@ -365,6 +361,10 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       b.textContent = dark ? '🌙' : '☀️';
       b.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
     });
+    var mainBtn = $('btn-theme-main');
+    if(mainBtn){
+      mainBtn.textContent = (dark ? '🌙' : '☀️') + ' Тема';
+    }
   }
 
   function applyTheme(dark){
@@ -382,12 +382,9 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
   // ---------- Шрифт ячеек ----------
   var FONT_KEY = 'kopilka-cell-font';
   var FONTS = [
-    { id:'system', name:'Стандартный', css:'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif' },
-    { id:'mono',   name:'Моноширинный', css:'ui-monospace,"Cascadia Mono","Consolas","Courier New",monospace' },
-    { id:'serif',  name:'Засечки', css:'Georgia,"Times New Roman",serif' },
-    { id:'round',  name:'Округлый', css:'Verdana,"Segoe UI",Tahoma,sans-serif' },
-    { id:'script', name:'Рукописный', css:'"Segoe Script","Comic Sans MS","Comic Sans",cursive' },
-    { id:'narrow', name:'Плотный', css:'"Arial Narrow","Segoe UI",Arial,sans-serif' }
+    { id:'system', name:'Стандартный', css:"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" },
+    { id:'script', name:'Рукописный', css:"'Segoe Script','Comic Sans MS','Comic Sans',cursive" },
+    { id:'narrow', name:'Плотный', css:"'Arial Narrow','Roboto Condensed',sans-serif-condensed,'Segoe UI',Arial,sans-serif" }
   ];
   var FONT_SIZE_MIN = 10;
   var FONT_SIZE_MAX = 18;
@@ -433,8 +430,8 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
     for(var i=0;i<FONTS.length;i++){
       var f = FONTS[i];
       itemsHtml +=
-        '<button type="button" class="font-item' + (f.id === cellFont ? ' active' : '') + '" data-font="' + f.id + '" style="font-family:' + f.css + '">' +
-          '<span class="f-prev">1 000</span>' +
+        '<button type="button" class="font-item' + (f.id === cellFont ? ' active' : '') + '" data-font="' + f.id + '">' +
+          '<span class="f-prev" style="font-family:' + f.css + '">1 000</span>' +
           '<span class="f-name">' + f.name + '</span>' +
         '</button>';
     }
@@ -497,6 +494,11 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   themeBtns.forEach(function(b){ b.addEventListener('click', toggleTheme); });
   applySavedTheme();
+
+  var btnFontMain = $('btn-font-main');
+  var btnThemeMain = $('btn-theme-main');
+  if(btnFontMain) btnFontMain.addEventListener('click', showFontModal);
+  if(btnThemeMain) btnThemeMain.addEventListener('click', toggleTheme);
 
   // ---------- Лимиты сетки по устройству ----------
   function isMobile(){
