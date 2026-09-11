@@ -19,7 +19,6 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body.tg{background:var(--tg-bg);color:var(--tg-tx)}
 
 #app{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 main{flex:1;max-width:920px;margin:0 auto;padding:1.25rem 1rem calc(2rem + var(--safe-bot));width:100%}
@@ -80,8 +79,8 @@ body.dark .overlay{background:rgba(0,0,0,.55)}
 .theme-toggle:active{transform:scale(.95)}
 body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
-.screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0 1rem}
-.screen-head h1{font-size:1.45rem;margin:0;word-break:break-word}
+.screen-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:1.2rem 0 1rem;padding:.85rem 1rem;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--ink)}
+.screen-head h1{font-size:1.45rem;margin:0;word-break:break-word;color:var(--ink)}
 .theme-row{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:.6rem;margin-top:.2rem}
 .theme-label{font-weight:600;color:var(--muted);font-size:.95rem}
 
@@ -112,8 +111,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 .cell{background:var(--bg);border:1.5px solid var(--line);border-radius:8px;min-height:52px;min-width:46px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:var(--ink);font-variant-numeric:tabular-nums;user-select:none;position:relative;transition:background .15s ease,border-color .15s ease,transform .1s ease;overflow:hidden}
 .grid.clickable .cell{cursor:pointer}
 .grid.clickable .cell:hover{border-color:var(--accent)}
-.cell .val{line-height:1.1;text-align:center;padding:0 .1rem;white-space:nowrap;font-variant-numeric:tabular-nums}
-.cell .val.small{font-size:.62rem}
+.cell .val{line-height:1.1;text-align:center;padding:0 .1rem;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:.72rem}
 .cell.empty{border-style:dashed;color:var(--faint);font-weight:500}
 .cell.set{background:var(--accent-soft);border-color:#e0c98f}
 .cell.done{background:var(--green-soft);border-color:var(--green)}
@@ -159,9 +157,9 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
 
 .overlay{position:fixed;inset:0;background:rgba(43,33,24,.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50;animation:fade .15s ease}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-.modal{background:var(--white);border-radius:var(--radius);box-shadow:0 20px 60px rgba(43,33,24,.28);padding:1.4rem;width:100%;max-width:400px;animation:rise .2s ease;max-height:90vh;overflow-y:auto}
+.modal{background:var(--white);border-radius:var(--radius);box-shadow:0 20px 60px rgba(43,33,24,.28);padding:1.4rem;width:100%;max-width:400px;animation:rise .2s ease;max-height:90vh;overflow-y:auto;color:var(--ink)}
 @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-.modal h3{margin:0 0 .35rem;font-size:1.05rem}
+.modal h3{margin:0 0 .35rem;font-size:1.05rem;color:var(--ink)}
 .modal p.muted{color:var(--muted);font-size:.85rem;margin:0 0 1rem}
 .modal .field{margin-bottom:.8rem}
 .modal .row{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
@@ -372,6 +370,15 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
   themeBtns.forEach(function(b){ b.addEventListener('click', toggleTheme); });
   applySavedTheme();
 
+  // ---------- Лимиты сетки по устройству ----------
+  function isMobile(){
+    return window.innerWidth <= 768;
+  }
+  function gridLimits(){
+    if(isMobile()) return { rows: 15, cols: 7 };
+    return { rows: 20, cols: 10 };
+  }
+
   function localLoad(){
     try{
       var raw = localStorage.getItem(KEY);
@@ -521,8 +528,9 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
   }
 
   function renderPreview(){
-    var rows = clampInt($('bank-rows').value, 1, 20, 5);
-    var cols = clampInt($('bank-cols').value, 1, 10, 6);
+    var L = gridLimits();
+    var rows = clampInt($('bank-rows').value, 1, L.rows, 5);
+    var cols = clampInt($('bank-cols').value, 1, L.cols, 6);
     var g = $('preview-grid');
     g.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
     g.innerHTML = '';
@@ -550,8 +558,9 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       showError('Копилка с таким названием уже существует. Придумайте другое название.');
       return;
     }
-    var rows = clampInt($('bank-rows').value, 1, 20, 5);
-    var cols = clampInt($('bank-cols').value, 1, 10, 6);
+    var L = gridLimits();
+    var rows = clampInt($('bank-rows').value, 1, L.rows, 5);
+    var cols = clampInt($('bank-cols').value, 1, L.cols, 6);
     var cells = [];
     for(var i=0;i<rows*cols;i++) cells.push({v:null, d:false});
     var bank = { name: name, rows: rows, cols: cols, cells: cells };
@@ -572,17 +581,24 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     return { rows: rows, cols: cols };
   }
 
+  function gridSizeFor(cells, cols){
+    if(!cols) cols = 10;
+    var rows = Math.ceil(cells / cols);
+    if(rows < 1) rows = 1;
+    return { rows: rows, cols: cols };
+  }
+
   var TEMPLATES = [
     { label: '«Лесенка» на 50 500\u20bd', rows: 10, cols: 10, name: 'Лесенка', build: ladderCells },
-    { label: 'на 10 000\u20bd', name: '', build: function(){ return genCells([[72,50],[14,100],[10,200],[2,500],[2,1000]]); } },
-    { label: 'на 25 000\u20bd', name: '', build: function(){ return genCells([[40,50],[16,100],[17,200],[18,500],[9,1000]]); } },
-    { label: 'на 50 000\u20bd', name: '', build: function(){ return genCells([[30,50],[17,100],[14,200],[14,500],[13,1000],[12,2000]]); } },
-    { label: 'на 75 000\u20bd', name: '', build: function(){ return genCells([[20,100],[20,200],[20,500],[21,1000],[19,2000]]); } },
-    { label: 'на 100 000\u20bd', name: '', build: function(){ return genCells([[26,100],[17,200],[16,500],[17,1000],[17,2000],[7,5000]]); } },
-    { label: 'на 150 000\u20bd', name: '', build: function(){ return genCells([[25,200],[20,500],[20,1000],[20,2000],[15,5000]]); } },
-    { label: 'на 250 000\u20bd', name: '', build: function(){ return genCells([[16,500],[25,1000],[26,2000],[33,5000]]); } },
-    { label: 'на 500 000\u20bd', name: '', build: function(){ return genCells([[8,500],[20,1000],[18,2000],[20,5000],[34,10000]]); } },
-    { label: 'на 1 000 000\u20bd', name: '', build: function(){ return genCells([[6,1000],[22,2000],[20,5000],[19,10000],[33,20000]]); } }
+    { label: 'на 10 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[32,50],[16,100],[14,200],[8,500]]); } },
+    { label: 'на 25 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[20,50],[12,100],[14,200],[12,500],[10,1000],[2,2000]]); } },
+    { label: 'на 50 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[16,50],[10,100],[11,200],[10,500],[11,1000],[10,2000],[2,5000]]); } },
+    { label: 'на 75 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[2,100],[14,200],[14,500],[15,1000],[25,2000]]); } },
+    { label: 'на 100 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[13,100],[11,200],[11,500],[12,1000],[12,2000],[11,5000]]); } },
+    { label: 'на 150 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[20,200],[14,500],[13,1000],[13,2000],[10,10000]]); } },
+    { label: 'на 250 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[13,1000],[16,2000],[41,5000]]); } },
+    { label: 'на 500 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[2,1000],[14,2000],[14,5000],[40,10000]]); } },
+    { label: 'на 1 000 000\u20bd', cols: 7, name: '', build: function(){ return genCells([[1,1000],[7,2000],[17,5000],[45,20000]]); } }
   ];
 
   function ladderCells(){
@@ -591,22 +607,25 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     return cells;
   }
 
-  // Строит сетку из разнородных номиналов без 3+ одинаковых подряд в строке.
-  // specs: [[count, value], ...]. Сетка ровная: число ячеек = rows*cols (по умолчанию 10 в ряд).
-  function genCells(specs){
+  // Строит сетку из разнородных номиналов без 3+ одинаковых подряд в строке и в столбце.
+  // specs: [[count, value], ...]; cols — число колонок.
+  function genCells(specs, cols){
+    if(!cols) cols = 7;
     var vals = [], counts = [];
     for(var s=0;s<specs.length;s++){ vals.push(specs[s][1]); counts.push(specs[s][0]); }
     var N = 0;
     for(var d=0; d<vals.length; d++) N += counts[d];
-    var cols = 10;
+    var rows = Math.round(N / cols);
     var out = [];
     var prev1 = null, prev2 = null;
+    var colLast = null, colPrev = null; // last value in each column
     for(var i=0;i<N;i++){
-      if(i % cols === 0){ prev1 = null; prev2 = null; }
+      var c = i % cols;
+      if(c === 0){ prev1 = null; prev2 = null; }
       var legal = [];
       for(var d=0; d<vals.length; d++){
         if(counts[d] <= 0) continue;
-        if(vals[d] === prev1 && vals[d] === prev2) continue;
+        if(vals[d] === prev1 && vals[d] === prev2) continue; // row triple
         legal.push(d);
       }
       if(legal.length === 0){
@@ -621,12 +640,12 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
       out.push(vals[pick]);
       prev2 = prev1; prev1 = vals[pick];
     }
-    // перемешиваем, сохраняя запрет трёх подряд
-    for(var iter=0; iter<N*8; iter++){
+    // финальная проверка и мягкая перетасовка, чтобы убрать повторы в столбцах
+    for(var iter=0; iter<N*20; iter++){
       var a = Math.floor(Math.random()*N), b = Math.floor(Math.random()*N);
       if(a === b || out[a] === out[b]) continue;
       var t = out[a]; out[a] = out[b]; out[b] = t;
-      if(hasTriple(out, cols)){ var t2 = out[a]; out[a] = out[b]; out[b] = t2; }
+      if(hasTriple(out, cols) || hasColTriple(out, cols)){ var t2 = out[a]; out[a] = out[b]; out[b] = t2; }
     }
     var cells = [];
     for(var i=0;i<N;i++) cells.push({v:out[i], d:false});
@@ -637,6 +656,13 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     for(var i=0;i+2<v.length;i++){
       if(((i % cols) + 2) >= cols) continue;
       if(v[i] === v[i+1] && v[i+1] === v[i+2]) return true;
+    }
+    return false;
+  }
+
+  function hasColTriple(v, cols){
+    for(var i=0;i+cols*2<v.length;i++){
+      if(v[i] === v[i+cols] && v[i+cols] === v[i+cols*2]) return true;
     }
     return false;
   }
@@ -659,7 +685,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     }
     store.currentName = name;
     var cells = t.build();
-    var size = gridSize(cells.length);
+    var size = gridSizeFor(cells.length, t.cols || 10);
     var bank = { name: name, rows: size.rows, cols: size.cols, cells: cells };
     saveBank(bank);
     store.currentName = name;
@@ -741,8 +767,7 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
         d.innerHTML = '<span class="val">' + (editable ? '+' : '\u2014') + '</span>';
       } else {
         d.className = 'cell set' + (c.d ? ' done' : '');
-        var small = (c.v >= 1000) ? ' small' : '';
-        d.innerHTML = '<span class="val' + small + '">' + fmt(c.v).replace('\u00A0\u20bd','') + '</span>';
+        d.innerHTML = '<span class="val">' + fmt(c.v).replace('\u00A0\u20bd','') + '</span>';
         d.title = fmt(c.v);
       }
       g.appendChild(d);
@@ -781,12 +806,14 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
   function openModal(html){
     $('modal').innerHTML = html;
     $('overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     var first = $('modal').querySelector('input,button');
     if(first && first.focus) setTimeout(function(){ first.focus(); }, 30);
   }
 
   function closeModal(){
     $('overlay').classList.add('hidden');
+    document.body.style.overflow = '';
   }
 
   function confirmModal(message, onYes){
@@ -983,8 +1010,10 @@ body.dark .theme-toggle{background:var(--accent-soft);border-color:var(--line)}
     input.addEventListener('blur', onInput);
   }
 
-  clampFieldInput($('bank-rows'), 1, 20);
-  clampFieldInput($('bank-cols'), 1, 10);
+  clampFieldInput($('bank-rows'), 1, gridLimits().rows);
+  clampFieldInput($('bank-cols'), 1, gridLimits().cols);
+  $('bank-rows').max = gridLimits().rows;
+  $('bank-cols').max = gridLimits().cols;
 
   $('btn-back-create').addEventListener('click', function(){
     renderPreview();
