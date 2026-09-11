@@ -171,4 +171,10 @@
 ### Исправлено
 - Превью шрифта в модалке теперь корректно показывает выбранную гарнитуру
 
+## Автор
+
 [ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
+
+<sub>
+  <font color="#6b7280">Проект создан с помощью ассистента <a href="https://multitool.works/">MultiTool</a>. Код, дизайн и логика разработаны совместно с AI-инструментом MultiTool.</font>
+</sub>
