@@ -90,5 +90,5 @@
 [ALANITO / ALANSHAMOV](https://github.com/ALANSHAMOV)
 
 <sub>
-  <font color="#6b7280">Проект создан с помощью ассистента <a href="https://multitool.works/">MultiTool</a>. Код, дизайн и логика разработаны совместно с AI-инструментом MultiTool.</font>
+<font color="#6b7280">Проект создан с помощью ассистента MultiTool.<br>Код, дизайн и логика разработаны совместно с AI-инструментами MultiTool и ChatGPT.</font>
 </sub>
