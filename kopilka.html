@@ -536,14 +536,17 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   // ---------- Таб-бар: Главная / Настройки ----------
   var tabbarBtns = document.querySelectorAll('.tabbar button');
+  var mainEl = document.querySelector('main');
   function showTab(tab){
     var isHome = tab === 'home';
     if(isHome){
+      mainEl.classList.remove('hidden');
       $('screen-settings').classList.add('hidden');
       ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
       $('screen-create').classList.remove('hidden');
       renderPreview();
     } else {
+      mainEl.classList.add('hidden');
       ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
       $('screen-settings').classList.remove('hidden');
     }
@@ -728,6 +731,7 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
   function $(id){ return document.getElementById(id); }
 
   function show(id){
+    mainEl.classList.remove('hidden');
     ['screen-create','screen-fill','screen-track','screen-settings'].forEach(function(s){ $(s).classList.add('hidden'); });
     $(id).classList.remove('hidden');
     if(TG && TG.MainButton) TG.MainButton.hide();
