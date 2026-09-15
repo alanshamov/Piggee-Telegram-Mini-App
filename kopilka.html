@@ -74,6 +74,27 @@ body.dark .tpl-item{background:var(--bg);border-color:var(--line);color:var(--in
 body.dark .modal{background:var(--white);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 body.dark .overlay{background:rgba(0,0,0,.55)}
 
+/* ---------- Нижний таб-бар ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;background:var(--white);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(43,33,24,.07);padding:0;padding-bottom:var(--safe-bot)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:.5rem 0 .55rem;background:none;border:none;border-radius:0;cursor:pointer;color:var(--muted);font-size:.7rem;font-weight:600;transition:color .15s ease,background .15s ease}
+.tabbar button .tab-ico{font-size:1.15rem;line-height:1;color:var(--muted);transition:color .15s ease}
+.tabbar button.active{color:var(--accent)}
+.tabbar button.active .tab-ico{color:var(--accent)}
+body.dark .tabbar{background:var(--white);border-top-color:var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.45)}
+body.dark .tabbar button{color:var(--faint)}
+body.dark .tabbar button.active{color:var(--accent)}
+body.dark .tabbar button.active .tab-ico{color:var(--accent)}
+main{padding-bottom:calc(5.2rem + var(--safe-bot))}
+
+/* ---------- Экран настроек ---------- */
+.settings-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.9rem 1rem;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--ink)}
+.settings-row .s-label{font-weight:700;font-size:.92rem;color:var(--ink)}
+.settings-row .s-sub{font-size:.78rem;color:var(--muted);margin-top:.1rem}
+.settings-row .s-right{display:flex;align-items:center;gap:.5rem;flex:0 0 auto}
+.settings-row .btn{padding:.5rem .9rem}
+#screen-settings{max-width:920px;margin:0 auto;padding:1.25rem 1rem calc(2rem + var(--safe-bot));width:100%}
+
 /* ---------- Кнопка темы ---------- */
 .theme-toggle{width:40px;height:40px;border-radius:50%;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-soft);border:1px solid var(--line);color:var(--ink);cursor:pointer;transition:transform .12s ease,background .15s ease}
 .theme-toggle:hover{transform:scale(1.06)}
@@ -174,7 +195,7 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
 .footer{color:var(--faint);font-size:.75rem;text-align:center;margin-top:2rem;padding-bottom:var(--safe-bot)}
 
-.overlay{position:fixed;inset:0;background:rgba(43,33,24,.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50;animation:fade .15s ease}
+.overlay{position:fixed;inset:0;background:rgba(43,33,24,.45);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:80;animation:fade .15s ease}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .modal{background:var(--white);border-radius:var(--radius);box-shadow:0 20px 60px rgba(43,33,24,.28);padding:1.4rem;width:100%;max-width:400px;animation:rise .2s ease;max-height:90vh;overflow-y:auto;color:var(--ink)}
 @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
@@ -252,10 +273,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
         <div class="btn-line" id="my-banks-wrap" style="display:none">
           <button class="btn ghost" id="btn-my-banks">Мои копилки</button>
         </div>
-        <div class="theme-row">
-          <button type="button" class="btn ghost" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек" id="btn-font-main">🔤 Шрифт</button>
-          <button type="button" class="btn ghost" aria-label="Переключить тему" title="Сменить тему" id="btn-theme-main">☀️ Тема</button>
-        </div>
       </div>
       <div class="preview">
         <h2>Предпросмотр</h2>
@@ -269,7 +286,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       <h1 id="fill-title">Заполните ячейки</h1>
       <div style="display:flex;gap:.5rem;align-items:center">
         <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
-        <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
         <button class="btn ghost" id="btn-back-create">← Назад</button>
       </div>
     </div>
@@ -292,7 +308,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       <h1 id="track-title">Моя копилка</h1>
       <div style="display:flex;gap:.5rem;align-items:center">
         <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
-        <button type="button" class="font-toggle" aria-label="Настроить шрифт ячеек" title="Шрифт ячеек">🔤</button>
         <button class="btn ghost small" id="btn-edit">Редактировать</button>
         <button class="btn small" id="btn-menu">Меню</button>
       </div>
@@ -327,6 +342,46 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   <p class="footer">Данные хранятся локально. Telegram Mini App</p>
 </main>
+
+<!-- Экран настроек (за пределами main, показывается вкладкой) -->
+<section id="screen-settings" class="hidden">
+  <div class="screen-head">
+    <h1>Настройки</h1>
+  </div>
+  <div class="card">
+    <div class="settings-list">
+      <div class="settings-row">
+        <div>
+          <div class="s-label">Тема</div>
+          <div class="s-sub">День или Ночь</div>
+        </div>
+        <div class="s-right">
+          <button type="button" class="btn ghost" id="btn-theme-settings">☀️ День</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div class="s-label">Шрифт цифр</div>
+          <div class="s-sub">Гарнитура и размер цифр в ячейках</div>
+        </div>
+        <div class="s-right">
+          <button type="button" class="btn ghost" id="btn-font-settings">🔤 Изменить</button>
+        </div>
+      </div>
+    </div>
+    <p class="footer">Данные хранятся локально. Telegram Mini App</p>
+  </div>
+</section>
+
+<!-- Нижний таб-бар -->
+<nav class="tabbar" id="tabbar">
+  <button type="button" data-tab="home" class="active" id="tab-home">
+    <span class="tab-ico">🏠</span>Главная
+  </button>
+  <button type="button" data-tab="settings" id="tab-settings">
+    <span class="tab-ico">⚙️</span>Настройки
+  </button>
+</nav>
 </div>
 
 <div class="overlay hidden" id="overlay"><div class="modal" id="modal"></div></div>
@@ -361,9 +416,9 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       b.textContent = dark ? '🌙' : '☀️';
       b.setAttribute('aria-label', dark ? 'Включить светлую тему' : 'Включить тёмную тему');
     });
-    var mainBtn = $('btn-theme-main');
-    if(mainBtn){
-      mainBtn.textContent = (dark ? '🌙' : '☀️') + ' Тема';
+    var settingsBtn = $('btn-theme-settings');
+    if(settingsBtn){
+      settingsBtn.textContent = dark ? '🌙 Ночь' : '☀️ День';
     }
   }
 
@@ -479,6 +534,31 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
   fontBtns.forEach(function(b){ b.addEventListener('click', showFontModal); });
   loadCellPrefs();
 
+  // ---------- Таб-бар: Главная / Настройки ----------
+  var tabbarBtns = document.querySelectorAll('.tabbar button');
+  function showTab(tab){
+    var isHome = tab === 'home';
+    if(isHome){
+      $('screen-settings').classList.add('hidden');
+      ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
+      $('screen-create').classList.remove('hidden');
+      renderPreview();
+    } else {
+      ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
+      $('screen-settings').classList.remove('hidden');
+    }
+    tabbarBtns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
+    if(TG && TG.MainButton) TG.MainButton.hide();
+  }
+  tabbarBtns.forEach(function(b){
+    b.addEventListener('click', function(){ showTab(b.getAttribute('data-tab')); });
+  });
+
+  var btnThemeSettings = $('btn-theme-settings');
+  if(btnThemeSettings) btnThemeSettings.addEventListener('click', toggleTheme);
+  var btnFontSettings = $('btn-font-settings');
+  if(btnFontSettings) btnFontSettings.addEventListener('click', showFontModal);
+
   function applySavedTheme(){
     var saved = null;
     try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
@@ -494,11 +574,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
 
   themeBtns.forEach(function(b){ b.addEventListener('click', toggleTheme); });
   applySavedTheme();
-
-  var btnFontMain = $('btn-font-main');
-  var btnThemeMain = $('btn-theme-main');
-  if(btnFontMain) btnFontMain.addEventListener('click', showFontModal);
-  if(btnThemeMain) btnThemeMain.addEventListener('click', toggleTheme);
 
   // ---------- Лимиты сетки по устройству ----------
   function isMobile(){
@@ -529,6 +604,7 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
   function startApp(){
     store = store || localLoad() || defaultStore();
     updateMyBanksBtn();
+    showTab('home');
     if(store.currentName){
       var cur = getBank(store.currentName);
       if(cur){
@@ -652,9 +728,10 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
   function $(id){ return document.getElementById(id); }
 
   function show(id){
-    ['screen-create','screen-fill','screen-track'].forEach(function(s){ $(s).classList.add('hidden'); });
+    ['screen-create','screen-fill','screen-track','screen-settings'].forEach(function(s){ $(s).classList.add('hidden'); });
     $(id).classList.remove('hidden');
     if(TG && TG.MainButton) TG.MainButton.hide();
+    tabbarBtns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === 'home'); });
   }
 
   function renderPreview(){
