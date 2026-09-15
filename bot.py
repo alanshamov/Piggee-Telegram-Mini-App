@@ -16,6 +16,8 @@ WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "")
 BANNER_URL = os.getenv("BANNER_URL", "https://alanshamov.github.io/Piggee-Telegram-Mini-App/banner-piggee-github.jpg")
 # Ссылка на репозиторий проекта
 GITHUB_URL = os.getenv("GITHUB_URL", "https://github.com/alanshamov/Piggee-Telegram-Mini-App")
+# Канал поддержки
+SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/PiggeeSupport")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -30,7 +32,8 @@ HELLO_TEXT = (
     "\u2022 зачёркивать ячейку, когда кладёшь деньги;\n"
     "\u2022 сам считать накопленное, цель и прогресс в процентах %.\n\n"
     "\u2699\ufe0f Подробнее о приложении и его обновлениях можно посмотреть на странице "
-    "<a href=\"" + GITHUB_URL + "\">GitHub</a>\n\n"
+    "<a href=\"" + GITHUB_URL + "\">GitHub</a>\n"
+    "\U0001F198 Вопросы и поддержка: <a href=\"" + SUPPORT_URL + "\">канал поддержки</a>\n\n"
     "\U0001F3DD Нажми кнопку ниже и начинай копить!"
 )
 
@@ -43,6 +46,12 @@ async def cmd_start(message: Message):
                 InlineKeyboardButton(
                     text="Открыть копилку",
                     web_app=WebAppInfo(url=APP_URL),
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="🆘 Поддержка",
+                    url=SUPPORT_URL,
                 )
             ]
         ]
