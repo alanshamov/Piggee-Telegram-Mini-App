@@ -775,9 +775,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
     var cells = [];
     for(var i=0;i<rows*cols;i++) cells.push({v:null, d:false});
     var bank = { name: name, rows: rows, cols: cols, cells: cells };
-    saveBank(bank);
-    store.currentName = name;
-    saveStore();
     currentBank = bank;
     renderFill(bank);
     show('screen-fill');
@@ -898,9 +895,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
     var cells = t.build();
     var size = gridSizeFor(cells.length, t.cols || 10);
     var bank = { name: name, rows: size.rows, cols: size.cols, cells: cells };
-    saveBank(bank);
-    store.currentName = name;
-    saveStore();
     currentBank = bank;
     renderFill(bank);
     show('screen-fill');
@@ -948,9 +942,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       }
     }
     var bank = { name: name, rows: rows, cols: cols, cells: cells };
-    saveBank(bank);
-    store.currentName = name;
-    saveStore();
     currentBank = bank;
     renderFill(bank);
     show('screen-fill');
@@ -1073,14 +1064,12 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
       if(v !== null && (isNaN(v) || v < 0)){ inp.focus(); return; }
       bank.cells[i].v = v;
       if(v === null) bank.cells[i].d = false;
-      saveBank(bank);
       renderFill(bank);
       closeModal();
     }
     $('modal').querySelector('[data-act=ok]').addEventListener('click', applyCell);
     $('modal').querySelector('[data-act=clear]').addEventListener('click', function(){
       bank.cells[i].v = null; bank.cells[i].d = false;
-      saveBank(bank);
       renderFill(bank);
       closeModal();
     });
@@ -1112,7 +1101,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
           bank.cells[idx].v = v;
           if(v === null) bank.cells[idx].d = false;
         }
-        saveBank(bank);
         renderFill(bank);
         idx++;
         step();
@@ -1239,7 +1227,6 @@ body.dark .font-toggle{background:var(--accent-soft);border-color:var(--line)}
     if(!bank) return;
     confirmModal('Очистить все суммы из ячеек?', function(){
       for(var i=0;i<bank.cells.length;i++){ bank.cells[i].v = null; bank.cells[i].d = false; }
-      saveBank(bank);
       renderFill(bank);
     });
   });
