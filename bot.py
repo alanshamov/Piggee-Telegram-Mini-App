@@ -33,7 +33,6 @@ HELLO_TEXT = (
     "\u2022 сам считать накопленное, цель и прогресс в процентах %.\n\n"
     "\u2699\ufe0f Подробнее о приложении и его обновлениях можно посмотреть на странице "
     "<a href=\"" + GITHUB_URL + "\">GitHub</a>\n\n"
-    "\U0001F198 Поддержка/Вопросы/Ваши идеи для развития: <a href=\"" + SUPPORT_URL + "\">сюда</a>\n\n"
     "\U0001F3DD Нажми кнопку ниже и начинай копить!"
 )
 
@@ -46,12 +45,6 @@ async def cmd_start(message: Message):
                 InlineKeyboardButton(
                     text="Открыть копилку",
                     web_app=WebAppInfo(url=APP_URL),
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Поддержка",
-                    url=SUPPORT_URL,
                 )
             ]
         ]
